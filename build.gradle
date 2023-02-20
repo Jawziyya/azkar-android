@@ -1,0 +1,27 @@
+buildscript {
+    ext {
+        kotlin_version = "1.5.31"
+        compose_version = "1.0.5"
+        compose_accompanist_version = "0.20.3"
+        moshi_version = "1.12.0"
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+}
+plugins {
+    id 'com.android.application' version '7.3.1' apply false
+    id 'com.android.library' version '7.3.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.5.31' apply false
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI"]
+}

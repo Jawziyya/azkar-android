@@ -1,0 +1,112 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "io.jawziyya.azkar"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0.0"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+
+        freeCompilerArgs += [
+                "-Xuse-experimental=com.google.accompanist.pager.ExperimentalPagerApi",
+        ]
+    }
+
+    buildFeatures {
+        viewBinding true
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+    }
+
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    namespace 'io.jawziyya.azkar'
+}
+
+dependencies {
+
+    // Core
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0'
+
+    // Compose
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
+    implementation 'androidx.activity:activity-compose:1.3.1'
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "com.google.accompanist:accompanist-insets:$compose_accompanist_version"
+    implementation "com.google.accompanist:accompanist-flowlayout:$compose_accompanist_version"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$compose_accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager:$compose_accompanist_version"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+    // Simple-Stack Navigation
+    implementation 'com.github.Zhuinden:simple-stack:2.5.0'
+    implementation 'com.github.Zhuinden:simple-stack-extensions:2.1.0'
+
+    // Retrofit
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+
+    // Chucker
+    debugImplementation "com.github.chuckerteam.chucker:library:3.5.2"
+    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.5.2"
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // Coil
+    implementation("io.coil-kt:coil:1.4.0")
+    implementation "com.github.skydoves:landscapist-coil:1.3.9"
+
+    implementation "com.airbnb.android:lottie-compose:5.2.0"
+}

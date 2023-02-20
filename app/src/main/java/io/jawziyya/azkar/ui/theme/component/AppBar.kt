@@ -1,0 +1,79 @@
+package io.jawziyya.azkar.ui.theme.component
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.statusBarsPadding
+import io.jawziyya.azkar.R
+import io.jawziyya.azkar.ui.core.rippleClickable
+import io.jawziyya.azkar.ui.theme.AppTheme
+
+/**
+ * Created by uvays on 22.01.2023.
+ */
+
+@Composable
+fun AppBar(
+    modifier: Modifier = Modifier,
+    title: String,
+    onBackClick: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(4.dp)
+            .background(AppTheme.colors.background)
+            .statusBarsPadding(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (onBackClick != null) {
+            Image(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .rippleClickable(onBackClick)
+                    .padding(16.dp),
+                painter = painterResource(R.drawable.ic_arrow_back_24),
+                contentDescription = null,
+            )
+        }
+
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            style = AppTheme.typography.header,
+            text = title,
+            maxLines = 1,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun AppBarPreview() {
+    AppBar(
+        title = stringResource(R.string.app_name),
+    )
+}
+
+@Preview
+@Composable
+fun AppBarBackButtonPreview() {
+    AppBar(
+        title = stringResource(R.string.app_name),
+        onBackClick = {}
+    )
+}
