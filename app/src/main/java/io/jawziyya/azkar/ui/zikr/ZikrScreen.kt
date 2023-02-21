@@ -147,12 +147,12 @@ private fun Content(
         )
         TitleTextSection(
             modifier = Modifier.padding(top = 16.dp),
-            title = "Транскрипция".uppercase(),
+            title = "Перевод".uppercase(),
             text = translation,
         )
         TitleTextSection(
             modifier = Modifier.padding(top = 16.dp),
-            title = "Перевод".uppercase(),
+            title = "Транскрипция".uppercase(),
             text = transliteration,
         )
         Row(
