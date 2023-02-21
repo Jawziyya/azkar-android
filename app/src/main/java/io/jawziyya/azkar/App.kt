@@ -77,10 +77,6 @@ class App : Application() {
     private fun createMoshi(): Moshi {
         return Moshi
             .Builder()
-            .add(
-                AzkarCategory::class.java,
-                EnumJsonAdapter.create(AzkarCategory::class.java).withUnknownFallback(AzkarCategory.OTHER)
-            )
             .build()
     }
 

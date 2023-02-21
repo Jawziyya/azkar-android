@@ -145,16 +145,23 @@ private fun Content(
             onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
             audioPlaybackSpeed = audioPlaybackSpeed,
         )
-        TitleTextSection(
-            modifier = Modifier.padding(top = 16.dp),
-            title = "Перевод".uppercase(),
-            text = translation,
-        )
-        TitleTextSection(
-            modifier = Modifier.padding(top = 16.dp),
-            title = "Транскрипция".uppercase(),
-            text = transliteration,
-        )
+
+        if (!translation.isNullOrBlank()) {
+            TitleTextSection(
+                modifier = Modifier.padding(top = 16.dp),
+                title = "Перевод".uppercase(),
+                text = translation,
+            )
+        }
+
+        if (!transliteration.isNullOrBlank()) {
+            TitleTextSection(
+                modifier = Modifier.padding(top = 16.dp),
+                title = "Транскрипция".uppercase(),
+                text = transliteration,
+            )
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
