@@ -3,37 +3,27 @@ package io.jawziyya.azkar.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.children
 import androidx.fragment.app.FragmentContainerView
-import io.jawziyya.azkar.App
-import io.jawziyya.azkar.ui.core.hideKeyboard
-import io.jawziyya.azkar.ui.core.navigation.AppStateChanger
-import io.jawziyya.azkar.ui.main.MainScreenKey
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.SimpleStateChanger
 import com.zhuinden.simplestack.navigator.Navigator
 import com.zhuinden.simplestackextensions.fragments.DefaultFragmentKey
 import com.zhuinden.simplestackextensions.services.DefaultServiceProvider
+import io.jawziyya.azkar.App
+import io.jawziyya.azkar.R
+import io.jawziyya.azkar.ui.core.hideKeyboard
+import io.jawziyya.azkar.ui.core.navigation.AppStateChanger
+import io.jawziyya.azkar.ui.main.MainScreenKey
 import timber.log.Timber
 
 class AppActivity : AppCompatActivity() {
 
     companion object {
         fun createIntent(context: Context): Intent = Intent(context, AppActivity::class.java)
-    }
-
-    private val viewRoot by lazy {
-        FragmentContainerView(this).apply {
-            id = View.generateViewId()
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-            )
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +40,14 @@ class AppActivity : AppCompatActivity() {
         }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val viewRoot = FragmentContainerView(this).apply {
+            id = R.id.root_fragment_container_id
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
+        }
 
         setContentView(viewRoot)
 

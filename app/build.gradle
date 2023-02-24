@@ -12,7 +12,7 @@ android {
         applicationId "io.jawziyya.azkar"
         minSdk 24
         targetSdk 33
-        versionCode 3
+        versionCode 4
         versionName "1.0.1"
 
         vectorDrawables {
@@ -43,7 +43,6 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
         compose true
     }
 
