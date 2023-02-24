@@ -12,6 +12,7 @@
         <item quantity="two">%1$d РАЗА</item>
         <item quantity="few">%1$d РАЗА</item>
         <item quantity="many">%1$d РАЗ</item>
+        <item quantity="other">%1$d РАЗ</item>
     </plurals>
     
     <string name="bukhari">аль-Бухари</string>
