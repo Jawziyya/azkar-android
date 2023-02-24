@@ -33,6 +33,7 @@ class ZikrFragment : BaseFragment() {
                 onAudioPlaybackSpeedChange = viewModel::onAudioPlaybackSpeedChangeClick,
                 audioPlaybackSpeed = audioPlaybackSpeed,
                 onPageChange = viewModel::onPageChange,
+                onHadithClick = viewModel::onHadithClick,
             )
         }
     }

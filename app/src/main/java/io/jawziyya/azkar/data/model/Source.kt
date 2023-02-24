@@ -7,7 +7,7 @@ import io.jawziyya.azkar.R
  * Created by uvays on 07.06.2022.
  */
 
-enum class AzkarSource(
+enum class Source(
     val value: String,
     @StringRes val titleRes: Int,
 ) {
@@ -24,7 +24,7 @@ enum class AzkarSource(
     companion object {
         private val values = values()
 
-        fun fromValue(value: String?): List<AzkarSource> = value
+        fun fromValue(value: String?): List<Source> = value
             ?.split(", ")
             ?.mapNotNull { source -> values.find { enumValue -> enumValue.value == source } }
             ?: emptyList()

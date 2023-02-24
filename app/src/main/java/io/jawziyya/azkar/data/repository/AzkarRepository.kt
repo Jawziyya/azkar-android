@@ -1,6 +1,8 @@
 package io.jawziyya.azkar.data.repository
 
+import io.jawziyya.azkar.R
 import io.jawziyya.azkar.data.datasource.AzkarDataSource
+import io.jawziyya.azkar.data.helper.JsonParser
 import io.jawziyya.azkar.data.mapper.AzkarResponseToModelMapper
 import io.jawziyya.azkar.data.model.Zikr
 import io.jawziyya.azkar.data.model.AzkarCategory
@@ -18,7 +20,7 @@ import timber.log.Timber
  */
 
 class AzkarRepository(
-    private val azkarDataSource: AzkarDataSource,
+    private val jsonParser: JsonParser,
     private val azkarResponseToModelMapper: AzkarResponseToModelMapper,
 ) {
 
@@ -27,10 +29,10 @@ class AzkarRepository(
 
     private suspend fun populate() {
         try {
-            val value = azkarDataSource.get().associateByTo(LinkedHashMap()) { azkar -> azkar.id }
-            azkarMapState.value = value
+            azkarMapState.value = jsonParser.parse<AzkarResponse>(R.raw.azkar)
+                .associateByTo(LinkedHashMap()) { azkar -> azkar.id }
         } catch (e: Exception) {
-            Timber.d(e)
+            Timber.e(e)
         }
     }
 
@@ -42,13 +44,13 @@ class AzkarRepository(
         }
 
         return@withContext azkarMapState.asStateFlow().map { map ->
-                map.values
-                    .asSequence()
-                    .map(azkarResponseToModelMapper)
-                    .filter { azkar -> azkar.category == azkarCategory }
-                    .sortedBy { azkar -> azkar.order }
-                    .toList()
-            }
+            map.values
+                .asSequence()
+                .map(azkarResponseToModelMapper)
+                .filter { azkar -> azkar.category == azkarCategory }
+                .sortedBy { azkar -> azkar.order }
+                .toList()
+        }
     }
 
     suspend fun getZikr(id: Long): Zikr? = withContext(Dispatchers.IO) {

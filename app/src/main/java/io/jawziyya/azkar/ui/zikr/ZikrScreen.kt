@@ -31,7 +31,8 @@ import com.google.accompanist.pager.rememberPagerState
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.data.model.Zikr
 import io.jawziyya.azkar.data.model.AzkarCategory
-import io.jawziyya.azkar.data.model.AzkarSource
+import io.jawziyya.azkar.data.model.Source
+import io.jawziyya.azkar.ui.core.noRippleClickable
 import io.jawziyya.azkar.ui.core.quantityStringResource
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.core.toSp
@@ -56,6 +57,7 @@ fun ZikrScreen(
     onAudioPlaybackSpeedChange: (Zikr) -> Unit,
     audioPlaybackSpeed: AudioPlaybackSpeed,
     onPageChange: () -> Unit,
+    onHadithClick: (Long, String) -> Unit,
 ) {
     AppTheme {
         ProvideWindowInsets {
@@ -80,9 +82,8 @@ fun ZikrScreen(
                     state = pagerState,
                 ) { page ->
                     val azkar = zikrList[page]
-                    val playerState =
-                        if (azkar.id == zikrPlayerState.azkarId) zikrPlayerState
-                        else ZikrPlayerState()
+                    val playerState = if (azkar.id == zikrPlayerState.azkarId) zikrPlayerState
+                    else ZikrPlayerState()
 
                     Content(
                         modifier = Modifier,
@@ -92,6 +93,7 @@ fun ZikrScreen(
                         onPlayClick = onPlayClick,
                         onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
                         audioPlaybackSpeed = audioPlaybackSpeed,
+                        onHadithClick = onHadithClick,
                     )
                 }
             }
@@ -108,6 +110,7 @@ private fun Content(
     onPlayClick: (Zikr) -> Unit,
     onAudioPlaybackSpeedChange: (Zikr) -> Unit,
     audioPlaybackSpeed: AudioPlaybackSpeed,
+    onHadithClick: (Long, String) -> Unit,
 ) {
     val text = zikr.text
     val translation = zikr.translation
@@ -179,17 +182,22 @@ private fun Content(
                     color = AppTheme.colors.tertiaryText,
                 )
                 Text(
-                    modifier = Modifier,
-                    text = quantityStringResource(
+                    modifier = Modifier, text = quantityStringResource(
                         R.plurals.zikr_repetition_count,
                         zikr.repeats,
                         zikr.repeats,
-                    ),
-                    style = AppTheme.typography.tip,
-                    textAlign = TextAlign.Start
+                    ), style = AppTheme.typography.tip, textAlign = TextAlign.Start
                 )
             }
-            Column(modifier = Modifier) {
+            Column(
+                modifier = Modifier.noRippleClickable(remember {
+                    {
+                        if (zikr.hadith != null) {
+                            onHadithClick(zikr.hadith, "Источник")
+                        }
+                    }
+                })
+            ) {
                 Text(
                     modifier = Modifier,
                     text = "Источник".uppercase(),
@@ -198,9 +206,8 @@ private fun Content(
                     color = AppTheme.colors.tertiaryText,
                 )
                 val sourceRes = zikr.source.firstOrNull()?.titleRes
-                val sourceText =
-                    if (sourceRes != null) stringResource(sourceRes).uppercase()
-                    else ""
+                val sourceText = if (sourceRes != null) stringResource(sourceRes).uppercase()
+                else ""
 
                 Text(
                     modifier = Modifier,
@@ -377,7 +384,7 @@ fun ZikrScreenPreview() {
         Zikr(
             id = 31,
             category = AzkarCategory.OTHER,
-            source = listOf(AzkarSource.AHMAD, AzkarSource.ABUDAUD),
+            source = listOf(Source.AHMAD, Source.ABUDAUD),
             title = "При облачении в новую одежду",
             text = "اللَّهُـمَّ لَـكَ الْحَـمْـدُ أَنْـتَ كَسَـوْتَنِيهِ، أَسْأَلُـكَ مِـنْ خَـيْرِهِ وَخَـيْرِ مَا صُنِعَ لَـهُ، وَأَعُوذُ بِكَ مِـنْ شَـرِّهِ وَشَـرِّ مَا صُنِعَ لَـه",
             translation = "О Аллах, хвала Тебе! Ты одел меня в эту (одежду), и я прошу Тебя о благе её и благе того, для чего она была изготовлена, и прибегаю к Тебе от зла её и зла того, для чего она была изготовлена.",
@@ -386,6 +393,7 @@ fun ZikrScreenPreview() {
             audioFileUrl = "https://azkar.ru/uploads/files/1219677d91fd00fa935ba1be08ea5b24.mp3",
             audioFileName = null,
             repeats = 1,
+            hadith = null,
         )
     )
 
@@ -400,5 +408,6 @@ fun ZikrScreenPreview() {
         onAudioPlaybackSpeedChange = {},
         audioPlaybackSpeed = AudioPlaybackSpeed.DEFAULT,
         onPageChange = {},
+        onHadithClick = { _, _ -> },
     )
 }

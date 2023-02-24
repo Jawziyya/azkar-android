@@ -2,7 +2,7 @@ package io.jawziyya.azkar.data.mapper
 
 import io.jawziyya.azkar.data.model.Zikr
 import io.jawziyya.azkar.data.model.AzkarCategory
-import io.jawziyya.azkar.data.model.AzkarSource
+import io.jawziyya.azkar.data.model.Source
 import io.jawziyya.azkar.data.network.response.AzkarResponse
 
 /**
@@ -17,7 +17,7 @@ class AzkarResponseToModelMapper : (AzkarResponse) -> Zikr {
         return Zikr(
             id = response.id,
             category = category,
-            source = AzkarSource.fromValue(response.source),
+            source = Source.fromValue(response.source),
             title = response.titleRu ?: "Зикр №${response.rowInCategory}",
             text = response.text ?: "",
             translation = response.translationRu,
@@ -26,6 +26,7 @@ class AzkarResponseToModelMapper : (AzkarResponse) -> Zikr {
             audioFileUrl = response.audioUrl,
             repeats = response.repeats ?: 1,
             audioFileName = response.audioFileName ?: fallbackAudioFileName,
+            hadith = response.hadith,
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.sp
 
 @Immutable
@@ -102,6 +103,7 @@ internal val LocalTypography = staticCompositionLocalOf {
             fontFamily = notoNaskhArabicFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 34.sp,
+            textDirection = TextDirection.Rtl,
         ),
         time = TextStyle(
             letterSpacing = 0.sp,

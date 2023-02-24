@@ -20,7 +20,7 @@ data class AzkarResponse(
     @Json(name = "title_ru") val titleRu: String?,
     @Json(name = "translation_ru") val translationRu: String?,
     @Json(name = "transliteration_ru") val transliterationRu: String?,
-    @Json(name = "hadith") val hadith: Int?,
+    @Json(name = "hadith") val hadith: Long?,
     @Json(name = "benefit_ru") val benefitRu: String?,
     @Json(name = "audio_file_name") val audioFileName: String?,
     @Json(name = "translation_en") val translationEn: String?,

@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 data class Zikr(
     val id: Long,
     val category: AzkarCategory?,
-    val source: List<AzkarSource?>,
+    val source: List<Source?>,
     val title: String,
     val text: String,
     val translation: String?,
@@ -20,4 +20,5 @@ data class Zikr(
     val audioFileUrl: String?,
     val audioFileName: String?,
     val repeats: Int,
+    val hadith: Long?,
 ) : Parcelable

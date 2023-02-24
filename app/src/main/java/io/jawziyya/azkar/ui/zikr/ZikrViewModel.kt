@@ -10,6 +10,7 @@ import io.jawziyya.azkar.ui.core.MediaPlayerState
 import io.jawziyya.azkar.ui.core.SimpleMediaPlayer
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.ScopedServices
+import io.jawziyya.azkar.ui.hadith.HadithScreenKey
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -195,6 +196,10 @@ class ZikrViewModel(
         playerStateFlow.value = playerStateFlow.value.copy(
             loading = false,
         )
+    }
+
+    fun onHadithClick(id: Long, title: String) {
+        backstack.goTo(HadithScreenKey(id, title))
     }
 
     override fun onServiceUnregistered() {

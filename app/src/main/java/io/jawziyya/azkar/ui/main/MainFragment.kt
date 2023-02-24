@@ -1,5 +1,7 @@
 package io.jawziyya.azkar.ui.main
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import io.jawziyya.azkar.ui.core.BaseFragment
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
@@ -14,8 +16,11 @@ class MainFragment : BaseFragment() {
 
     override fun setContent(view: ComposeView) {
         view.setContent {
+            val fudul by viewModel.fudulFlow.collectAsState()
+
             MainScreen(
                 onAzkarCategoryClick = viewModel::onAzkarCategoryClick,
+                fudul = fudul,
             )
         }
     }

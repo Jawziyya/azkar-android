@@ -29,6 +29,7 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.data.model.AzkarCategory
+import io.jawziyya.azkar.data.model.Fudul
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.colorSystemTeal
@@ -41,6 +42,7 @@ import io.jawziyya.azkar.ui.theme.component.AppBar
 @Composable
 fun MainScreen(
     onAzkarCategoryClick: (AzkarCategory) -> Unit,
+    fudul: Fudul?,
 ) {
     AppTheme {
         ProvideWindowInsets {
@@ -89,6 +91,12 @@ fun MainScreen(
                             },
                         )
                     }
+
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        style = AppTheme.typography.subtitle,
+                        text = "",
+                    )
                 }
             }
         }
@@ -191,5 +199,8 @@ private fun ListItem(
 @Preview
 @Composable
 private fun MainScreenPreview() {
-    MainScreen(onAzkarCategoryClick = remember { { } })
+    MainScreen(
+        onAzkarCategoryClick = remember { { } },
+        fudul = null,
+    )
 }

@@ -69,3 +69,11 @@ fun Modifier.rippleClickable(onClick: () -> Unit): Modifier = composed {
         onClick = onClick,
     )
 }
+
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
+    clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        onClick = onClick,
+    )
+}

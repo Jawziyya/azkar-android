@@ -12,6 +12,8 @@ import io.jawziyya.azkar.data.repository.FileRepository
 import com.zhuinden.simplestack.GlobalServices
 import com.zhuinden.simplestackextensions.servicesktx.add
 import com.zhuinden.simplestackextensions.servicesktx.rebind
+import io.jawziyya.azkar.data.helper.JsonParser
+import io.jawziyya.azkar.data.repository.HadithRepository
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -50,7 +52,7 @@ class App : Application() {
                 interceptors = listOf(createHttpLoggingInterceptor())
             )
             val apiService = createApiService(client = okHttpClient)
-            val azkarDataSource = AzkarDataSource(resources, moshi)
+            val jsonParser = JsonParser(resources, moshi)
 
             globalServices =
                 GlobalServices
@@ -59,7 +61,8 @@ class App : Application() {
                     .add(resources)
                     .add(moshi)
                     .add(apiService)
-                    .add(AzkarRepository(azkarDataSource, AzkarResponseToModelMapper()))
+                    .add(AzkarRepository(jsonParser, AzkarResponseToModelMapper()))
+                    .add(HadithRepository(jsonParser))
                     .add(FileRepository(this, apiService))
                     .build()
         }
