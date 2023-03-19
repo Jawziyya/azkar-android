@@ -13,10 +13,11 @@ import kotlinx.parcelize.Parcelize
 @JsonClass(generateAdapter = true)
 data class Fudul(
     @Json(name = "id") val id: Long,
-    @Json(name = "text") val text: String?,
+    @Json(name = "text_ru") val text: String?,
     @Json(name = "source") val sourceRaw: String?,
     @Json(name = "text_en") val textEn: String?,
     @Json(name = "source_ext") val sourceExt: String?,
 ) : Parcelable {
     val source: Source? get() = Source.fromValue(sourceRaw).firstOrNull()
+
 }

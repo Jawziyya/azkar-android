@@ -13,8 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsPadding
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import io.jawziyya.azkar.data.model.Hadith
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.component.AppBar
@@ -25,26 +24,24 @@ import io.jawziyya.azkar.ui.theme.component.AppBar
 
 @Composable
 fun HadithScreen(
-    title: String, onBackClick: () -> Unit, hadith: Hadith?
+    title: String,
+    onBackClick: () -> Unit,
+    hadith: Hadith?,
 ) {
     AppTheme {
-        ProvideWindowInsets {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(AppTheme.colors.background),
-            ) {
-                AppBar(
-                    title = title,
-                    onBackClick = onBackClick,
-                )
-                Crossfade(hadith) { value ->
-                    if (value == null) {
-                        Box(modifier = Modifier.fillMaxSize())
-                    } else {
-                        Content(value)
-                    }
-                }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppTheme.colors.background),
+        ) {
+            AppBar(
+                title = title,
+                onBackClick = onBackClick,
+            )
+            Crossfade(hadith) { value ->
+                if (value == null) return@Crossfade
+
+                Content(value)
             }
         }
     }
@@ -52,26 +49,28 @@ fun HadithScreen(
 
 @Composable
 private fun Content(hadith: Hadith) {
+    val text = remember(hadith.text) { hadith.text?.replace("*", "") ?: "" }
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .navigationBarsPadding(),
     ) {
-        Text(
+        MarkdownText(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .padding(16.dp),
-            text = hadith.text ?: "",
+            markdown = text,
             style = AppTheme.typography.arabic,
-            fontSize = 28.sp,
+            fontSize = 24.sp,
             textAlign = TextAlign.Start,
         )
-        Text(
+        MarkdownText(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            text = hadith.translation ?: "",
+            markdown = hadith.translation ?: "",
             style = AppTheme.typography.body,
             textAlign = TextAlign.Start,
         )

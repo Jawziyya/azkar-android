@@ -21,4 +21,5 @@ data class Zikr(
     val audioFileName: String?,
     val repeats: Int,
     val hadith: Long?,
+    val benefit: String?,
 ) : Parcelable

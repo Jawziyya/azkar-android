@@ -33,6 +33,7 @@ data class ZikrScreenKey(
                     azkarRepository = lookup(),
                     fileRepository = lookup(),
                     simpleMediaPlayer = SimpleMediaPlayer(application),
+                    sharedPreferences = lookup(),
                 )
             )
         }

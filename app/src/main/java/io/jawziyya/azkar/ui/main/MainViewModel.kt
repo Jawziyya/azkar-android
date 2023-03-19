@@ -18,6 +18,7 @@ import kotlin.coroutines.CoroutineContext
  */
 
 class MainViewModel(
+    private val screenKey: MainScreenKey,
     private val backstack: Backstack,
     private val fudulRepository: FudulRepository,
 ) : ScopedServices.Registered {

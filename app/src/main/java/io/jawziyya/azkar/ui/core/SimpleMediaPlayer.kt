@@ -56,7 +56,7 @@ class SimpleMediaPlayer(private val application: Application) {
 
         if (!validState) return
 
-        mediaPlayer.seekTo(timestamp, MediaPlayer.SEEK_PREVIOUS_SYNC)
+        mediaPlayer.seekTo(timestamp.toInt())
         mediaPlayer.start()
         stateFlow.tryEmit(MediaPlayerState.STARTED)
     }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import io.jawziyya.azkar.ui.core.BaseFragment
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
+import timber.log.Timber
 
 /**
  * Created by uvays on 07.06.2022.
@@ -19,6 +20,8 @@ class ZikrFragment : BaseFragment() {
 
         view.setContent {
             val azkarList by viewModel.zikrFlow.collectAsState()
+            val translationVisible by viewModel.translationVisibleFlow.collectAsState(true)
+            val transliterationVisible by viewModel.transliterationVisibleFlow.collectAsState(true)
             val playerState by viewModel.playerStateFlow.collectAsState()
             val audioPlaybackSpeed by viewModel.audioPlaybackSpeedFlow.collectAsState()
 
@@ -27,6 +30,10 @@ class ZikrFragment : BaseFragment() {
                 azkarCategory = screenKey.azkarCategory,
                 azkarIndex = screenKey.azkarIndex,
                 zikrList = azkarList,
+                translationVisible = translationVisible,
+                onTranslationVisibilityChange = viewModel::onTranslationVisibilityChange,
+                transliterationVisible = transliterationVisible,
+                onTransliterationVisibilityChange = viewModel::onTransliterationVisibilityChange,
                 zikrPlayerState = playerState,
                 onReplay = viewModel::onReplayClick,
                 onPlayClick = viewModel::onPlayClick,

@@ -2,6 +2,8 @@ package io.jawziyya.azkar.ui.main
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,18 +17,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.data.model.AzkarCategory
 import io.jawziyya.azkar.data.model.Fudul
@@ -34,6 +40,7 @@ import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.colorSystemTeal
 import io.jawziyya.azkar.ui.theme.component.AppBar
+import kotlin.random.Random
 
 /**
  * Created by uvays on 05.06.2022.
@@ -45,57 +52,72 @@ fun MainScreen(
     fudul: Fudul?,
 ) {
     AppTheme {
-        ProvideWindowInsets {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppTheme.colors.background),
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(AppTheme.colors.background),
+                    .verticalScroll(state = rememberScrollState())
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
             ) {
-                AppBar(
-                    title = stringResource(R.string.app_name),
+                val emojiArray = stringArrayResource(R.array.app_name_emoji)
+                val random = remember { Random(System.currentTimeMillis()) }
+                val emoji = remember { emojiArray.random(random) }
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    style = AppTheme.typography.header,
+                    fontSize = 24.sp,
+                    text = "${stringResource(R.string.app_name)} $emoji",
+                    maxLines = 1,
+                )
+                DayAzkarSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                    onAzkarCategoryClick = onAzkarCategoryClick,
                 )
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(state = rememberScrollState())
-                        .navigationBarsWithImePadding(),
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(AppTheme.colors.contentBackground),
                 ) {
-                    DayAzkarSection(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                        onAzkarCategoryClick = onAzkarCategoryClick,
+                    ListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        imageRes = R.drawable.ic_mosque_32,
+                        title = stringResource(R.string.azkar_category_after_salah),
+                        onClick = remember {
+                            { onAzkarCategoryClick(AzkarCategory.AFTER_SALAH) }
+                        },
                     )
-                    Column(
-                        modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(AppTheme.colors.contentBackground),
-                    ) {
-                        ListItem(
-                            modifier = Modifier.fillMaxWidth(),
-                            imageRes = R.drawable.ic_mosque_32,
-                            title = stringResource(R.string.azkar_category_after_salah),
-                            onClick = remember {
-                                { onAzkarCategoryClick(AzkarCategory.AFTER_SALAH) }
-                            },
-                        )
-                        ListItem(
-                            modifier = Modifier.fillMaxWidth(),
-                            imageRes = R.drawable.ic_round_layers_32,
-                            colorFilter = ColorFilter.tint(colorSystemTeal),
-                            title = stringResource(R.string.azkar_category_other),
-                            onClick = remember {
-                                { onAzkarCategoryClick(AzkarCategory.OTHER) }
-                            },
-                        )
-                    }
+                    ListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        imageRes = R.drawable.ic_round_layers_32,
+                        colorFilter = ColorFilter.tint(colorSystemTeal),
+                        title = stringResource(R.string.azkar_category_other),
+                        onClick = remember {
+                            { onAzkarCategoryClick(AzkarCategory.OTHER) }
+                        },
+                    )
+                }
 
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        style = AppTheme.typography.subtitle,
-                        text = "",
+                Crossfade(
+                    targetState = fudul, animationSpec = tween(durationMillis = 600)
+                ) { value ->
+                    if (value == null) return@Crossfade
+
+                    FudulSection(
+                        modifier = Modifier.padding(top = 32.dp),
+                        fudul = value,
                     )
                 }
             }
@@ -116,6 +138,7 @@ private fun DayAzkarSection(
         DayAzkarItem(
             modifier = Modifier.weight(1f),
             lottieRes = R.raw.sun,
+            animationSpeed = .3f,
             title = stringResource(R.string.azkar_category_morning),
             onClick = remember {
                 { onAzkarCategoryClick(AzkarCategory.MORNING) }
@@ -124,6 +147,7 @@ private fun DayAzkarSection(
         DayAzkarItem(
             modifier = Modifier.weight(1f),
             lottieRes = R.raw.moon2,
+            animationSpeed = .2f,
             title = stringResource(R.string.azkar_category_evening),
             onClick = remember {
                 { onAzkarCategoryClick(AzkarCategory.EVENING) }
@@ -134,7 +158,11 @@ private fun DayAzkarSection(
 
 @Composable
 private fun DayAzkarItem(
-    modifier: Modifier = Modifier, @RawRes lottieRes: Int, title: String, onClick: () -> Unit
+    modifier: Modifier = Modifier,
+    @RawRes lottieRes: Int,
+    animationSpeed: Float,
+    title: String,
+    onClick: () -> Unit,
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(lottieRes))
 
@@ -151,6 +179,7 @@ private fun DayAzkarItem(
                 .align(Alignment.CenterHorizontally),
             composition = composition,
             iterations = LottieConstants.IterateForever,
+            speed = animationSpeed,
         )
         Text(
             modifier = Modifier
@@ -192,6 +221,43 @@ private fun ListItem(
             painter = painterResource(R.drawable.ic_chevron_right_24),
             contentDescription = null,
             colorFilter = ColorFilter.tint(AppTheme.colors.tertiaryText),
+        )
+    }
+}
+
+@Composable
+private fun FudulSection(
+    modifier: Modifier = Modifier,
+    fudul: Fudul,
+) {
+    val source = fudul.source?.let { source -> stringResource(source.titleRes) }
+    val sourceText = remember(fudul, source) {
+        listOfNotNull(source, fudul.sourceExt).joinToString(separator = ", ")
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            lineHeight = 20.sp,
+            text = fudul.text ?: "",
+            textAlign = TextAlign.Center,
+            color = AppTheme.colors.text,
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            textAlign = TextAlign.Center,
+            text = sourceText,
+            color = AppTheme.colors.secondaryText,
         )
     }
 }

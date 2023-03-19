@@ -1,18 +1,17 @@
 package io.jawziyya.azkar
 
 import android.app.Application
+import android.content.SharedPreferences
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.EnumJsonAdapter
-import io.jawziyya.azkar.data.datasource.AzkarDataSource
-import io.jawziyya.azkar.data.mapper.AzkarResponseToModelMapper
-import io.jawziyya.azkar.data.model.AzkarCategory
-import io.jawziyya.azkar.data.network.core.ApiService
-import io.jawziyya.azkar.data.repository.AzkarRepository
-import io.jawziyya.azkar.data.repository.FileRepository
 import com.zhuinden.simplestack.GlobalServices
 import com.zhuinden.simplestackextensions.servicesktx.add
 import com.zhuinden.simplestackextensions.servicesktx.rebind
 import io.jawziyya.azkar.data.helper.JsonParser
+import io.jawziyya.azkar.data.mapper.AzkarResponseToModelMapper
+import io.jawziyya.azkar.data.network.core.ApiService
+import io.jawziyya.azkar.data.repository.AzkarRepository
+import io.jawziyya.azkar.data.repository.FileRepository
+import io.jawziyya.azkar.data.repository.FudulRepository
 import io.jawziyya.azkar.data.repository.HadithRepository
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -59,10 +58,12 @@ class App : Application() {
                     .builder()
                     .rebind<Application>(this)
                     .add(resources)
+                    .add(getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE))
                     .add(moshi)
                     .add(apiService)
                     .add(AzkarRepository(jsonParser, AzkarResponseToModelMapper()))
                     .add(HadithRepository(jsonParser))
+                    .add(FudulRepository(jsonParser))
                     .add(FileRepository(this, apiService))
                     .build()
         }

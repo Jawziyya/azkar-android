@@ -1,6 +1,8 @@
 package io.jawziyya.azkar.ui.zikr
 
 import android.app.Application
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.core.net.toUri
 import io.jawziyya.azkar.data.helper.intervalFlow
 import io.jawziyya.azkar.data.model.Zikr
@@ -10,8 +12,11 @@ import io.jawziyya.azkar.ui.core.MediaPlayerState
 import io.jawziyya.azkar.ui.core.SimpleMediaPlayer
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.ScopedServices
+import io.jawziyya.azkar.data.helper.observeKey
+import io.jawziyya.azkar.ui.core.Settings
 import io.jawziyya.azkar.ui.hadith.HadithScreenKey
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import timber.log.Timber
@@ -28,13 +33,22 @@ class ZikrViewModel(
     private val azkarRepository: AzkarRepository,
     private val fileRepository: FileRepository,
     private val simpleMediaPlayer: SimpleMediaPlayer,
+    private val sharedPreferences: SharedPreferences,
 ) : ScopedServices.Registered {
 
     private val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Main
     private val coroutineScope = CoroutineScope(coroutineContext)
 
     val zikrFlow: MutableStateFlow<List<Zikr>> = MutableStateFlow(emptyList())
+
+    val translationVisibleFlow: Flow<Boolean>
+        get() = sharedPreferences.observeKey(Settings.translationVisibleKey, true)
+
+    val transliterationVisibleFlow: Flow<Boolean>
+        get() = sharedPreferences.observeKey(Settings.transliterationVisibleKey, true)
+
     val playerStateFlow: MutableStateFlow<ZikrPlayerState> = MutableStateFlow(ZikrPlayerState())
+
     val audioPlaybackSpeedFlow: MutableStateFlow<AudioPlaybackSpeed> =
         MutableStateFlow(AudioPlaybackSpeed.DEFAULT)
 
@@ -45,9 +59,7 @@ class ZikrViewModel(
 
     override fun onServiceRegistered() {
         coroutineScope.launch {
-            azkarRepository
-                .getAzkar(screenKey.azkarCategory)
-                .catch { e -> Timber.e(e) }
+            azkarRepository.getAzkar(screenKey.azkarCategory).catch { e -> Timber.e(e) }
                 .collect { value ->
                     zikrFlow.value = value
                 }
@@ -198,8 +210,16 @@ class ZikrViewModel(
         )
     }
 
+    fun onTranslationVisibilityChange(value: Boolean) {
+        sharedPreferences.edit { putBoolean(Settings.translationVisibleKey, !value) }
+    }
+
+    fun onTransliterationVisibilityChange(value: Boolean) {
+        sharedPreferences.edit { putBoolean(Settings.transliterationVisibleKey, !value) }
+    }
+
     fun onHadithClick(id: Long, title: String) {
-        backstack.goTo(HadithScreenKey(id, title))
+//        backstack.goTo(HadithScreenKey(id, title))
     }
 
     override fun onServiceUnregistered() {

@@ -27,6 +27,7 @@ class AzkarResponseToModelMapper : (AzkarResponse) -> Zikr {
             repeats = response.repeats ?: 1,
             audioFileName = response.audioFileName ?: fallbackAudioFileName,
             hadith = response.hadith,
+            benefit = response.benefitRu,
         )
     }
 }

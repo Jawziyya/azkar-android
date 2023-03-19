@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import io.jawziyya.azkar.ui.core.navigation.FragmentKey
 import com.zhuinden.simplestack.ServiceBinder
 import com.zhuinden.simplestackextensions.servicesktx.add
+import com.zhuinden.simplestackextensions.servicesktx.lookup
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -14,6 +15,12 @@ import kotlinx.parcelize.Parcelize
 data class MainScreenKey(val placeholder: String = "") : FragmentKey() {
     override fun instantiateFragment(): Fragment = MainFragment()
     override fun bindServices(serviceBinder: ServiceBinder) = with(serviceBinder) {
-        add(MainViewModel(backstack = backstack))
+        add(
+            MainViewModel(
+                screenKey = this@MainScreenKey,
+                backstack = backstack,
+                fudulRepository = lookup(),
+            )
+        )
     }
 }

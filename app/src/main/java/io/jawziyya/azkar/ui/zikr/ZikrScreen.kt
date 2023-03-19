@@ -1,16 +1,17 @@
 package io.jawziyya.azkar.ui.zikr
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -19,12 +20,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsPadding
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -38,6 +42,7 @@ import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.core.toSp
 import io.jawziyya.azkar.ui.theme.*
 import io.jawziyya.azkar.ui.theme.component.AppBar
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 /**
@@ -51,6 +56,10 @@ fun ZikrScreen(
     azkarCategory: AzkarCategory,
     azkarIndex: Int,
     zikrList: List<Zikr>,
+    translationVisible: Boolean,
+    onTranslationVisibilityChange: (Boolean) -> Unit,
+    transliterationVisible: Boolean,
+    onTransliterationVisibilityChange: (Boolean) -> Unit,
     zikrPlayerState: ZikrPlayerState,
     onReplay: (Zikr) -> Unit,
     onPlayClick: (Zikr) -> Unit,
@@ -60,42 +69,44 @@ fun ZikrScreen(
     onHadithClick: (Long, String) -> Unit,
 ) {
     AppTheme {
-        ProvideWindowInsets {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(AppTheme.colors.background),
-            ) {
-                AppBar(
-                    title = stringResource(azkarCategory.titleRes),
-                    onBackClick = onBackClick,
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppTheme.colors.background),
+        ) {
+            AppBar(
+                title = stringResource(azkarCategory.titleRes),
+                onBackClick = onBackClick,
+            )
+            val pagerState = rememberPagerState(azkarIndex)
+
+            LaunchedEffect(pagerState.currentPage) {
+                onPageChange()
+            }
+
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                count = zikrList.size,
+                state = pagerState,
+            ) { page ->
+                val azkar = zikrList[page]
+                val playerState = if (azkar.id == zikrPlayerState.azkarId) zikrPlayerState
+                else ZikrPlayerState()
+
+                Content(
+                    modifier = Modifier,
+                    zikr = azkar,
+                    translationVisible = translationVisible,
+                    onTranslationVisibilityChange = onTranslationVisibilityChange,
+                    transliterationVisible = transliterationVisible,
+                    onTransliterationVisibilityChange = onTransliterationVisibilityChange,
+                    playerState = playerState,
+                    onReplay = onReplay,
+                    onPlayClick = onPlayClick,
+                    onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
+                    audioPlaybackSpeed = audioPlaybackSpeed,
+                    onHadithClick = onHadithClick,
                 )
-                val pagerState = rememberPagerState(azkarIndex)
-
-                LaunchedEffect(pagerState.currentPage) {
-                    onPageChange()
-                }
-
-                HorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
-                    count = zikrList.size,
-                    state = pagerState,
-                ) { page ->
-                    val azkar = zikrList[page]
-                    val playerState = if (azkar.id == zikrPlayerState.azkarId) zikrPlayerState
-                    else ZikrPlayerState()
-
-                    Content(
-                        modifier = Modifier,
-                        zikr = azkar,
-                        playerState = playerState,
-                        onReplay = onReplay,
-                        onPlayClick = onPlayClick,
-                        onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
-                        audioPlaybackSpeed = audioPlaybackSpeed,
-                        onHadithClick = onHadithClick,
-                    )
-                }
             }
         }
     }
@@ -105,6 +116,10 @@ fun ZikrScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     zikr: Zikr,
+    translationVisible: Boolean,
+    onTranslationVisibilityChange: (Boolean) -> Unit,
+    transliterationVisible: Boolean,
+    onTransliterationVisibilityChange: (Boolean) -> Unit,
     playerState: ZikrPlayerState,
     onReplay: (Zikr) -> Unit,
     onPlayClick: (Zikr) -> Unit,
@@ -125,7 +140,8 @@ private fun Content(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp),
             text = zikr.title,
             style = AppTheme.typography.title,
             textAlign = TextAlign.Center,
@@ -134,13 +150,13 @@ private fun Content(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             text = text,
             style = AppTheme.typography.arabic,
-            textAlign = TextAlign.End,
+            textAlign = TextAlign.Start,
         )
         Player(
-            modifier = Modifier,
+            modifier = Modifier.padding(top = 16.dp),
             zikr = zikr,
             playerState = playerState,
             onReplay = onReplay,
@@ -151,24 +167,28 @@ private fun Content(
 
         if (!translation.isNullOrBlank()) {
             TitleTextSection(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier,
                 title = "Перевод".uppercase(),
                 text = translation,
+                visible = translationVisible,
+                onVisibilityChange = onTranslationVisibilityChange,
             )
         }
 
         if (!transliteration.isNullOrBlank()) {
             TitleTextSection(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier,
                 title = "Транскрипция".uppercase(),
                 text = transliteration,
+                visible = transliterationVisible,
+                onVisibilityChange = onTransliterationVisibilityChange,
             )
         }
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp, bottom = 16.dp)
+                .padding(top = 16.dp, bottom = 16.dp)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -217,6 +237,21 @@ private fun Content(
                 )
             }
         }
+
+//        if (zikr.benefit != null) {
+//            Text(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 16.dp)
+//                    .padding(horizontal = 16.dp),
+//                fontSize = 14.sp,
+//                fontWeight = FontWeight.Medium,
+//                lineHeight = 20.sp,
+//                text = zikr.benefit,
+//                textAlign = TextAlign.Start,
+//                color = AppTheme.colors.text,
+//            )
+//        }
     }
 }
 
@@ -230,7 +265,9 @@ private fun Player(
     onAudioPlaybackSpeedChange: (Zikr) -> Unit,
     audioPlaybackSpeed: AudioPlaybackSpeed,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -308,9 +345,10 @@ private fun PlayerProgress(
     timestamp: Long,
     loading: Boolean,
 ) {
-    val valueRaw = 1f * timestamp / duration
-
+    val valueRaw = calculateProgress(timestamp, duration)
     val value by animateFloatAsState(valueRaw)
+    Timber.d("valueRaw=$valueRaw")
+    Timber.d("value=$value")
 
     Crossfade(targetState = loading) { loadingValue ->
         if (loadingValue) {
@@ -330,12 +368,15 @@ private fun PlayerProgress(
     }
 }
 
+private fun calculateProgress(timestamp: Long, duration: Long): Float {
+    if (timestamp <= 0 && duration <= 0) return 0f
+    return 1f * timestamp / duration
+}
+
 private fun millisToTimeText(value: Long): String {
     var difference = value
-    val elapsedDays = TimeUnit.MILLISECONDS.toDays(value)
 
     difference %= TimeUnit.DAYS.toMillis(1)
-    val elapsedHours = TimeUnit.MILLISECONDS.toHours(difference)
 
     difference %= TimeUnit.HOURS.toMillis(1)
     val elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(difference)
@@ -355,24 +396,54 @@ private fun TitleTextSection(
     modifier: Modifier = Modifier,
     title: String,
     text: String,
+    visible: Boolean,
+    onVisibilityChange: (Boolean) -> Unit,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            style = AppTheme.typography.sectionHeader,
-            textAlign = TextAlign.Start,
-            color = AppTheme.colors.tertiaryText,
-        )
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = text,
-            style = AppTheme.typography.body,
-            textAlign = TextAlign.Start,
+        val chevronRotateDegree by animateFloatAsState(if (visible) 180f else 0f)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .rippleClickable(remember(visible) { { onVisibilityChange(visible) } })
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = title,
+                style = AppTheme.typography.sectionHeader,
+                textAlign = TextAlign.Start,
+                color = AppTheme.colors.tertiaryText,
+            )
+            Image(
+                modifier = Modifier.rotate(chevronRotateDegree),
+                painter = painterResource(R.drawable.ic_chevron_down_24),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(AppTheme.colors.alternativeAccent)
+            )
+        }
+
+        AnimatedVisibility(visible) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                text = text,
+                style = AppTheme.typography.body,
+                textAlign = TextAlign.Start,
+            )
+        }
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(AppTheme.colors.secondaryBackground),
         )
     }
 }
@@ -394,6 +465,7 @@ fun ZikrScreenPreview() {
             audioFileName = null,
             repeats = 1,
             hadith = null,
+            benefit = "Кто произнесёт эти слова днём, будучи убеждённым в них, и умрёт в тот же день до наступления вечера, окажется среди обитателей Рая."
         )
     )
 
@@ -402,6 +474,10 @@ fun ZikrScreenPreview() {
         azkarCategory = AzkarCategory.OTHER,
         azkarIndex = 0,
         zikrList = zikrList,
+        translationVisible = true,
+        onTranslationVisibilityChange = {},
+        transliterationVisible = true,
+        onTransliterationVisibilityChange = {},
         zikrPlayerState = ZikrPlayerState(),
         onPlayClick = {},
         onReplay = {},
