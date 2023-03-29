@@ -34,9 +34,7 @@ enum class AzkarCategory(
     );
 
     companion object {
-        private val values = values()
-
         fun fromValue(value: String?): AzkarCategory? =
-            values.find { enumValue -> enumValue.value == value }
+            values().find { enum -> enum.value == value }
     }
 }

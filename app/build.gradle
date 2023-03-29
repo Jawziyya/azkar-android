@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -13,7 +15,7 @@ android {
         minSdk 24
         targetSdk 33
         versionCode 5
-        versionName "1.1.0"
+        versionName "1.1.1"
 
         vectorDrawables {
             useSupportLibrary true
@@ -26,6 +28,14 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            ext.enableCrashlytics = true
+            manifestPlaceholders.crashlyticsCollectionEnabled = "true"
+        }
+
+        debug {
+            ext.enableCrashlytics = false
+            manifestPlaceholders.crashlyticsCollectionEnabled = "false"
         }
     }
 
@@ -83,6 +93,11 @@ dependencies {
     // Simple-Stack Navigation
     implementation 'com.github.Zhuinden:simple-stack:2.5.0'
     implementation 'com.github.Zhuinden:simple-stack-extensions:2.1.0'
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:31.3.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
     // Retrofit
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'

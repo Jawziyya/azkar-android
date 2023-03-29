@@ -19,5 +19,4 @@ data class Fudul(
     @Json(name = "source_ext") val sourceExt: String?,
 ) : Parcelable {
     val source: Source? get() = Source.fromValue(sourceRaw).firstOrNull()
-
 }

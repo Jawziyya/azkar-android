@@ -1,7 +1,6 @@
 package io.jawziyya.azkar.data.repository
 
 import io.jawziyya.azkar.R
-import io.jawziyya.azkar.data.datasource.AzkarDataSource
 import io.jawziyya.azkar.data.helper.JsonParser
 import io.jawziyya.azkar.data.mapper.AzkarResponseToModelMapper
 import io.jawziyya.azkar.data.model.Zikr

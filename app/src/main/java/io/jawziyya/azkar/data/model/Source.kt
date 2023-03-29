@@ -22,11 +22,9 @@ enum class Source(
     IBNHUZEYMA(value = "IbnHuzeyma", titleRes = R.string.ibnhuzeyma);
 
     companion object {
-        private val values = values()
-
         fun fromValue(value: String?): List<Source> = value
             ?.split(", ")
-            ?.mapNotNull { source -> values.find { enumValue -> enumValue.value == source } }
+            ?.mapNotNull { source -> values().find { enum -> enum.value == source } }
             ?: emptyList()
     }
 }
