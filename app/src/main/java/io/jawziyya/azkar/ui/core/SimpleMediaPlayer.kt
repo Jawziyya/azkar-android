@@ -92,7 +92,7 @@ class SimpleMediaPlayer(private val application: Application) {
             mediaPlayer.playbackParams = mediaPlayer.playbackParams.setSpeed(speed)
             stateFlow.tryEmit(MediaPlayerState.PREPARED)
 
-            mediaPlayer.seekTo(timestamp, MediaPlayer.SEEK_PREVIOUS_SYNC)
+            mediaPlayer.seekTo(timestamp.toInt())
             mediaPlayer.start()
             stateFlow.tryEmit(MediaPlayerState.STARTED)
         } catch (e: Exception) {
