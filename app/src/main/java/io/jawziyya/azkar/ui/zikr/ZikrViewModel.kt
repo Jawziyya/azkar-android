@@ -219,7 +219,7 @@ class ZikrViewModel(
     }
 
     fun onHadithClick(id: Long, title: String) {
-//        backstack.goTo(HadithScreenKey(id, title))
+        backstack.goTo(HadithScreenKey(id, title))
     }
 
     override fun onServiceUnregistered() {

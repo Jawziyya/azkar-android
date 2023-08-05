@@ -12,4 +12,5 @@ abstract class FragmentKey : DefaultFragmentKey(), DefaultServiceProvider.HasSer
     override fun getFragmentTag(): String = toString()
     override fun getScopeTag(): String = fragmentTag
     override fun bindServices(serviceBinder: ServiceBinder) {}
+    open val bottomSheet: Boolean = false
 }

@@ -45,16 +45,21 @@ fun AppTheme(content: @Composable () -> Unit) {
 private fun rememberTextSelectionColors(colors: Colors): TextSelectionColors {
     return remember(colors.accent, colors.accent.copy(alpha = 0.4f)) {
         TextSelectionColors(
-            handleColor = colors.accent, backgroundColor = colors.accent.copy(alpha = 0.4f)
+            handleColor = colors.accent,
+            backgroundColor = colors.accent.copy(alpha = 0.4f),
         )
     }
 }
 
 object AppTheme {
     val colors: Colors
-        @Composable @ReadOnlyComposable get() = LocalColors.current
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalColors.current
     val typography: Typography
-        @Composable @ReadOnlyComposable get() = LocalTypography.current
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalTypography.current
 }
 
 internal val LocalColors = staticCompositionLocalOf { defaultColors() }

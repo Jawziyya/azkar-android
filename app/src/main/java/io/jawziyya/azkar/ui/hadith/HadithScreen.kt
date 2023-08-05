@@ -4,11 +4,15 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,19 +33,28 @@ fun HadithScreen(
     hadith: Hadith?,
 ) {
     AppTheme {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(Color(0x29000000))
+                .padding(top = 72.dp),
+//            contentAlignment = Alignment.BottomCenter,
         ) {
-            AppBar(
-                title = title,
-                onBackClick = onBackClick,
-            )
-            Crossfade(hadith) { value ->
-                if (value == null) return@Crossfade
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    .background(AppTheme.colors.background),
+            ) {
+                AppBar(
+                    title = title,
+                    onBackClick = onBackClick,
+                )
+                Crossfade(hadith) { value ->
+                    if (value == null) return@Crossfade
 
-                Content(value)
+                    Content(value)
+                }
             }
         }
     }

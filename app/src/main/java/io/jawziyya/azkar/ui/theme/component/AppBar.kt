@@ -26,6 +26,7 @@ import io.jawziyya.azkar.ui.theme.AppTheme
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
+
     title: String,
     onBackClick: (() -> Unit)? = null,
 ) {

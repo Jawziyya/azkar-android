@@ -14,7 +14,7 @@ import com.zhuinden.simplestackextensions.fragments.DefaultFragmentStateChanger
 class AppStateChanger(
     fragmentManager: FragmentManager,
     @IdRes containerId: Int
-) : DefaultFragmentStateChanger(fragmentManager, containerId) {
+) : BottomSheetStateChanger(fragmentManager, containerId) {
 
     override fun onForwardNavigation(
         fragmentTransaction: FragmentTransaction,

@@ -25,4 +25,5 @@ data class HadithScreenKey(val id: Long, val title: String) : FragmentKey() {
             )
         }
     }
+    override val bottomSheet: Boolean get() = true
 }

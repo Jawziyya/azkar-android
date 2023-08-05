@@ -30,6 +30,7 @@ fun AzkarScreen(
     onZikrClick: (Int, Zikr) -> Unit,
     onBackClick: () -> Unit,
 ) {
+
     AppTheme {
         ProvideWindowInsets {
             Column(
@@ -47,9 +48,7 @@ fun AzkarScreen(
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = rememberInsetsPaddingValues(
-                                insets = LocalWindowInsets.current.navigationBars
-                            ),
+                            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                         ) {
                             itemsIndexed(zikrList) { index, item ->
                                 Text(

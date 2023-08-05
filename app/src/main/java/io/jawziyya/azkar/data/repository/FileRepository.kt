@@ -15,8 +15,7 @@ import java.io.*
  * Created by uvays on 09.06.2022.
  */
 
-class
-FileRepository(
+class FileRepository(
     private val application: App,
     private val apiService: ApiService,
 ) {
