@@ -6,6 +6,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,13 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +37,6 @@ import io.jawziyya.azkar.data.model.Fudul
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.colorSystemTeal
-import io.jawziyya.azkar.ui.theme.component.AppBar
 import kotlin.random.Random
 
 /**
@@ -77,6 +74,7 @@ fun MainScreen(
                     fontSize = 24.sp,
                     text = "${stringResource(R.string.app_name)} $emoji",
                     maxLines = 1,
+                    color = AppTheme.colors.text,
                 )
                 DayAzkarSection(
                     modifier = Modifier
@@ -111,7 +109,10 @@ fun MainScreen(
                 }
 
                 Crossfade(
-                    targetState = fudul, animationSpec = tween(durationMillis = 600)
+                    targetState = fudul,
+                    animationSpec =
+                    tween(durationMillis = 600),
+                    label = "",
                 ) { value ->
                     if (value == null) return@Crossfade
 
@@ -146,7 +147,7 @@ private fun DayAzkarSection(
         )
         DayAzkarItem(
             modifier = Modifier.weight(1f),
-            lottieRes = R.raw.moon2,
+            lottieRes = if (isSystemInDarkTheme()) R.raw.moon else R.raw.moon2,
             animationSpeed = .2f,
             title = stringResource(R.string.azkar_category_evening),
             onClick = remember {
@@ -188,6 +189,7 @@ private fun DayAzkarItem(
             style = AppTheme.typography.subtitle,
             text = title,
             textAlign = TextAlign.Center,
+            color = AppTheme.colors.text,
         )
     }
 }
@@ -216,6 +218,7 @@ private fun ListItem(
             modifier = Modifier.weight(1f),
             style = AppTheme.typography.subtitle,
             text = title,
+            color = AppTheme.colors.text,
         )
         Image(
             painter = painterResource(R.drawable.ic_chevron_right_24),

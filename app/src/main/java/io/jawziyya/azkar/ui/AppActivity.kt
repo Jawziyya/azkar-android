@@ -83,7 +83,6 @@ class AppActivity : AppCompatActivity() {
             .install(this, viewRoot, History.of(MainScreenKey()))
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (!Navigator.onBackPressed(this)) {
             super.onBackPressed()

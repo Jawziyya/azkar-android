@@ -2,6 +2,7 @@ package io.jawziyya.azkar.ui.theme.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
@@ -10,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +29,6 @@ import io.jawziyya.azkar.ui.theme.AppTheme
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
-
     title: String,
     onBackClick: (() -> Unit)? = null,
 ) {
@@ -39,6 +41,7 @@ fun AppBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onBackClick != null) {
+            val iconColor = if (isSystemInDarkTheme()) Color.White else Color.Black
             Image(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -46,6 +49,7 @@ fun AppBar(
                     .padding(16.dp),
                 painter = painterResource(R.drawable.ic_arrow_back_24),
                 contentDescription = null,
+                colorFilter = ColorFilter.tint(iconColor),
             )
         } else {
             Spacer(modifier = Modifier.size(56.dp))
@@ -59,6 +63,7 @@ fun AppBar(
             text = title,
             maxLines = 1,
             textAlign = TextAlign.Center,
+            color = AppTheme.colors.text,
         )
 
         Spacer(modifier = Modifier.size(56.dp))

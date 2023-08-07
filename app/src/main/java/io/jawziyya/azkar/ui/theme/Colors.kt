@@ -10,14 +10,25 @@ import androidx.compose.ui.graphics.Color
  */
 
 fun defaultColors(): Colors = Colors(
-    accent = accent,
-    alternativeAccent = alternativeAccent,
-    background = background,
-    secondaryBackground = secondaryBackground,
-    contentBackground = contentBackground,
-    text = text,
-    secondaryText = secondaryText,
-    tertiaryText = tertiaryText,
+    accent = Color(0xFF9D8ECE),
+    alternativeAccent = Color(0xFFA290EB),
+    background = Color(0xFFF7F7F7),
+    secondaryBackground = Color(0xFFF1F1F7),
+    contentBackground = Color(0xFFFFFFFF),
+    text = Color(0xFF000000),
+    secondaryText = Color(0xFF515151),
+    tertiaryText = Color(0xFFB4B4B4),
+)
+
+fun darkColors(): Colors = Colors(
+    accent = Color(0xFF916DD5),
+    alternativeAccent = Color(0xFF916DD5),
+    background = Color(0xFF111111),
+    secondaryBackground = Color(0xFF111111),
+    contentBackground = Color(0xFF1B1A1B),
+    text = Color(0xFFFFFFFF),
+    secondaryText = Color(0xFFCCCED9),
+    tertiaryText = Color(0xFF5A5A5A),
 )
 
 class Colors(

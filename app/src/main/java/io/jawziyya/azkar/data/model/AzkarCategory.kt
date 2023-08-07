@@ -25,7 +25,7 @@ enum class AzkarCategory(
     AFTER_SALAH(
         value = "after-salah",
         titleRes = R.string.azkar_category_after_salah,
-        main = false,
+        main = true,
     ),
     OTHER(
         value = "other",

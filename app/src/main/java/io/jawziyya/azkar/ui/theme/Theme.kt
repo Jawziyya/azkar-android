@@ -1,13 +1,16 @@
 package io.jawziyya.azkar.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Immutable
 data class Typography(
@@ -23,11 +26,25 @@ data class Typography(
 
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
-    val colors = AppTheme.colors
+    val systemInDarkTheme = isSystemInDarkTheme()
+    val colors = if (systemInDarkTheme) darkColors() else defaultColors()
     val typography = AppTheme.typography
 
-    val rememberedColors = remember { colors.copy() }.apply { updateColorsFrom(colors) }
+    val rememberedColors = remember(systemInDarkTheme) { colors.copy() }
+        .apply { updateColorsFrom(colors) }
     val selectionColors = rememberTextSelectionColors(rememberedColors)
+
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !systemInDarkTheme
+
+    DisposableEffect(systemUiController, useDarkIcons) {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = useDarkIcons,
+        )
+
+        return@DisposableEffect onDispose {}
+    }
 
     CompositionLocalProvider(
         LocalColors provides rememberedColors,

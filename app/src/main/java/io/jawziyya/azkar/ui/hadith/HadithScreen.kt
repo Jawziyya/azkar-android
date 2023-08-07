@@ -2,17 +2,17 @@ package io.jawziyya.azkar.ui.hadith
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,28 +33,19 @@ fun HadithScreen(
     hadith: Hadith?,
 ) {
     AppTheme {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x29000000))
-                .padding(top = 72.dp),
-//            contentAlignment = Alignment.BottomCenter,
+                .fillMaxWidth()
+                .background(AppTheme.colors.background),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(AppTheme.colors.background),
-            ) {
-                AppBar(
-                    title = title,
-                    onBackClick = onBackClick,
-                )
-                Crossfade(hadith) { value ->
-                    if (value == null) return@Crossfade
+            AppBar(
+                title = title,
+                onBackClick = onBackClick,
+            )
+            Crossfade(hadith, label = "") { value ->
+                if (value == null) return@Crossfade
 
-                    Content(value)
-                }
+                Content(value)
             }
         }
     }
@@ -78,6 +69,7 @@ private fun Content(hadith: Hadith) {
             style = AppTheme.typography.arabic,
             fontSize = 24.sp,
             textAlign = TextAlign.Start,
+            color = AppTheme.colors.text,
         )
         MarkdownText(
             modifier = Modifier
@@ -86,6 +78,7 @@ private fun Content(hadith: Hadith) {
             markdown = hadith.translation ?: "",
             style = AppTheme.typography.body,
             textAlign = TextAlign.Start,
+            color = AppTheme.colors.text,
         )
     }
 }

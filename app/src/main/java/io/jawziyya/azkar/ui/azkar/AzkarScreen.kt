@@ -32,43 +32,42 @@ fun AzkarScreen(
 ) {
 
     AppTheme {
-        ProvideWindowInsets {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(AppTheme.colors.background),
-            ) {
-                AppBar(
-                    title = title,
-                    onBackClick = onBackClick,
-                )
-                Crossfade(targetState = zikrList.isEmpty()) { isEmpty ->
-                    if (isEmpty) {
-                        Box(modifier = Modifier.fillMaxSize())
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-                        ) {
-                            itemsIndexed(zikrList) { index, item ->
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .rippleClickable { onZikrClick(index, item) }
-                                        .padding(16.dp),
-                                    text = item.title,
-                                    style = AppTheme.typography.title,
-                                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppTheme.colors.background),
+        ) {
+            AppBar(
+                title = title,
+                onBackClick = onBackClick,
+            )
+            Crossfade(targetState = zikrList.isEmpty(), label = "") { isEmpty ->
+                if (isEmpty) {
+                    Box(modifier = Modifier.fillMaxSize())
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                    ) {
+                        itemsIndexed(zikrList) { index, item ->
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .rippleClickable { onZikrClick(index, item) }
+                                    .padding(16.dp),
+                                text = item.title,
+                                style = AppTheme.typography.title,
+                                color = AppTheme.colors.text,
+                            )
 
-                                if (index != zikrList.lastIndex) {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(1.dp)
-                                            .background(colorGray),
-                                    )
-                                }
-                            }
+//                            if (index != zikrList.lastIndex) {
+//                                Spacer(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .height(1.dp)
+//                                        .background(colorGray),
+//                                )
+//                            }
                         }
                     }
                 }

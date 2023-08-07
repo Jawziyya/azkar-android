@@ -145,6 +145,7 @@ private fun Content(
             text = zikr.title,
             style = AppTheme.typography.title,
             textAlign = TextAlign.Center,
+            color = AppTheme.colors.secondaryText,
         )
         Text(
             modifier = Modifier
@@ -154,6 +155,7 @@ private fun Content(
             text = text,
             style = AppTheme.typography.arabic,
             textAlign = TextAlign.Start,
+            color = AppTheme.colors.text,
         )
         Player(
             modifier = Modifier.padding(top = 16.dp),
@@ -202,11 +204,15 @@ private fun Content(
                     color = AppTheme.colors.tertiaryText,
                 )
                 Text(
-                    modifier = Modifier, text = quantityStringResource(
+                    modifier = Modifier,
+                    text = quantityStringResource(
                         R.plurals.zikr_repetition_count,
                         zikr.repeats,
                         zikr.repeats,
-                    ), style = AppTheme.typography.tip, textAlign = TextAlign.Start
+                    ),
+                    style = AppTheme.typography.tip,
+                    textAlign = TextAlign.Start,
+                    color = AppTheme.colors.text,
                 )
             }
             Column(
@@ -233,7 +239,8 @@ private fun Content(
                     modifier = Modifier,
                     text = sourceText,
                     style = AppTheme.typography.tip,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    color = AppTheme.colors.text,
                 )
             }
         }
@@ -403,7 +410,7 @@ private fun TitleTextSection(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val chevronRotateDegree by animateFloatAsState(if (visible) 180f else 0f)
+        val chevronRotateDegree by animateFloatAsState(if (visible) 180f else 0f, label = "")
 
         Row(
             modifier = Modifier
@@ -436,6 +443,7 @@ private fun TitleTextSection(
                 text = text,
                 style = AppTheme.typography.body,
                 textAlign = TextAlign.Start,
+                color = AppTheme.colors.text,
             )
         }
 
@@ -443,7 +451,7 @@ private fun TitleTextSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(AppTheme.colors.secondaryBackground),
+                .background(AppTheme.colors.accent.copy(alpha = 0.1f)),
         )
     }
 }

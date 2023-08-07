@@ -88,6 +88,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-flowlayout:$compose_accompanist_version"
     implementation "com.google.accompanist:accompanist-swiperefresh:$compose_accompanist_version"
     implementation "com.google.accompanist:accompanist-pager:$compose_accompanist_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$compose_accompanist_version"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     // Simple-Stack Navigation
