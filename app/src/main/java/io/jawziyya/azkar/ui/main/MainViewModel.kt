@@ -3,9 +3,10 @@ package io.jawziyya.azkar.ui.main
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.ScopedServices
 import io.jawziyya.azkar.data.model.AzkarCategory
-import io.jawziyya.azkar.data.model.Fudul
-import io.jawziyya.azkar.data.repository.FudulRepository
+import io.jawziyya.azkar.data.model.Fadail
+import io.jawziyya.azkar.data.repository.FadailRepository
 import io.jawziyya.azkar.ui.azkar.AzkarScreenKey
+import io.jawziyya.azkar.ui.settings.SettingsScreenKey
 import io.jawziyya.azkar.ui.zikr.ZikrScreenKey
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,20 +21,20 @@ import kotlin.coroutines.CoroutineContext
 class MainViewModel(
     private val screenKey: MainScreenKey,
     private val backstack: Backstack,
-    private val fudulRepository: FudulRepository,
+    private val fadailRepository: FadailRepository,
 ) : ScopedServices.Registered {
 
     private val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Main
     private val coroutineScope = CoroutineScope(coroutineContext)
 
-    val fudulFlow: MutableStateFlow<Fudul?> = MutableStateFlow(null)
+    val fadailFlow: MutableStateFlow<Fadail?> = MutableStateFlow(null)
 
     override fun onServiceRegistered() {
         coroutineScope.launch {
-            fudulRepository
+            fadailRepository
                 .getRandom()
                 .catch { Timber.e(it) }
-                .collect { value -> fudulFlow.value = value }
+                .collect { value -> fadailFlow.value = value }
         }
     }
 
@@ -47,5 +48,9 @@ class MainViewModel(
         } else {
             backstack.goTo(AzkarScreenKey(azkarCategory = azkarCategory))
         }
+    }
+
+    fun onSettingsClick() {
+        backstack.goTo(SettingsScreenKey())
     }
 }

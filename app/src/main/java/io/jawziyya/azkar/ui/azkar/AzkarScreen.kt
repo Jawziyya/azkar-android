@@ -59,15 +59,6 @@ fun AzkarScreen(
                                 style = AppTheme.typography.title,
                                 color = AppTheme.colors.text,
                             )
-
-//                            if (index != zikrList.lastIndex) {
-//                                Spacer(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .height(1.dp)
-//                                        .background(colorGray),
-//                                )
-//                            }
                         }
                     }
                 }

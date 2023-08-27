@@ -33,7 +33,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.data.model.AzkarCategory
-import io.jawziyya.azkar.data.model.Fudul
+import io.jawziyya.azkar.data.model.Fadail
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.colorSystemTeal
@@ -46,7 +46,8 @@ import kotlin.random.Random
 @Composable
 fun MainScreen(
     onAzkarCategoryClick: (AzkarCategory) -> Unit,
-    fudul: Fudul?,
+    onSettingsClick: () -> Unit,
+    fadail: Fadail?,
 ) {
     AppTheme {
         Column(
@@ -108,17 +109,32 @@ fun MainScreen(
                     )
                 }
 
+                Column(
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(AppTheme.colors.contentBackground),
+                ) {
+                    ListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        imageRes = R.drawable.ic_settings_32,
+                        colorFilter = ColorFilter.tint(AppTheme.colors.tertiaryText),
+                        title = stringResource(R.string.main_settings),
+                        onClick = onSettingsClick,
+                    )
+                }
+
                 Crossfade(
-                    targetState = fudul,
-                    animationSpec =
-                    tween(durationMillis = 600),
+                    targetState = fadail,
+                    animationSpec = tween(durationMillis = 600),
                     label = "",
                 ) { value ->
                     if (value == null) return@Crossfade
 
                     FudulSection(
                         modifier = Modifier.padding(top = 32.dp),
-                        fudul = value,
+                        fadail = value,
                     )
                 }
             }
@@ -214,12 +230,14 @@ private fun ListItem(
             contentDescription = null,
             colorFilter = colorFilter,
         )
+
         Text(
             modifier = Modifier.weight(1f),
             style = AppTheme.typography.subtitle,
             text = title,
             color = AppTheme.colors.text,
         )
+
         Image(
             painter = painterResource(R.drawable.ic_chevron_right_24),
             contentDescription = null,
@@ -231,11 +249,11 @@ private fun ListItem(
 @Composable
 private fun FudulSection(
     modifier: Modifier = Modifier,
-    fudul: Fudul,
+    fadail: Fadail,
 ) {
-    val source = fudul.source?.let { source -> stringResource(source.titleRes) }
-    val sourceText = remember(fudul, source) {
-        listOfNotNull(source, fudul.sourceExt).joinToString(separator = ", ")
+    val source = fadail.source?.let { source -> stringResource(source.titleRes) }
+    val sourceText = remember(fadail, source) {
+        listOfNotNull(source, fadail.sourceExt).joinToString(separator = ", ")
     }
 
     Column(
@@ -250,7 +268,7 @@ private fun FudulSection(
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             lineHeight = 20.sp,
-            text = fudul.text ?: "",
+            text = fadail.text ?: "",
             textAlign = TextAlign.Center,
             color = AppTheme.colors.text,
         )
@@ -269,7 +287,8 @@ private fun FudulSection(
 @Composable
 private fun MainScreenPreview() {
     MainScreen(
-        onAzkarCategoryClick = remember { { } },
-        fudul = null,
+        onAzkarCategoryClick = remember { {} },
+        onSettingsClick = remember { {} },
+        fadail = null,
     )
 }

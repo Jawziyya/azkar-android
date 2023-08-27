@@ -16,11 +16,12 @@ class MainFragment : BaseFragment() {
 
     override fun setContent(view: ComposeView) {
         view.setContent {
-            val fudul by viewModel.fudulFlow.collectAsState()
+            val fudul by viewModel.fadailFlow.collectAsState()
 
             MainScreen(
                 onAzkarCategoryClick = viewModel::onAzkarCategoryClick,
-                fudul = fudul,
+                onSettingsClick = viewModel::onSettingsClick,
+                fadail = fudul,
             )
         }
     }

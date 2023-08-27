@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -215,14 +216,19 @@ private fun Content(
                     color = AppTheme.colors.text,
                 )
             }
+
+            val (clickableModifier, textDecoration) =
+                if (zikr.hadith == null) Pair(
+                    Modifier,
+                    TextDecoration.None,
+                )
+                else Pair(
+                    Modifier.noRippleClickable { onHadithClick(zikr.hadith, "Источник") },
+                    TextDecoration.Underline,
+                )
+
             Column(
-                modifier = Modifier.noRippleClickable(remember {
-                    {
-                        if (zikr.hadith != null) {
-                            onHadithClick(zikr.hadith, "Источник")
-                        }
-                    }
-                })
+                modifier = Modifier.then(clickableModifier)
             ) {
                 Text(
                     modifier = Modifier,
@@ -232,8 +238,9 @@ private fun Content(
                     color = AppTheme.colors.tertiaryText,
                 )
                 val sourceRes = zikr.source.firstOrNull()?.titleRes
-                val sourceText = if (sourceRes != null) stringResource(sourceRes).uppercase()
-                else ""
+                val sourceText =
+                    if (sourceRes != null) stringResource(sourceRes).uppercase()
+                    else ""
 
                 Text(
                     modifier = Modifier,
@@ -241,6 +248,7 @@ private fun Content(
                     style = AppTheme.typography.tip,
                     textAlign = TextAlign.Start,
                     color = AppTheme.colors.text,
+                    textDecoration = textDecoration,
                 )
             }
         }
@@ -309,7 +317,10 @@ private fun Player(
                     }
                 },
             ) {
-                Crossfade(targetState = playerState.playing) { value ->
+                Crossfade(
+                    targetState = playerState.playing,
+                    label = "",
+                ) { value ->
                     Icon(
                         imageVector = if (value) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                         contentDescription = null,

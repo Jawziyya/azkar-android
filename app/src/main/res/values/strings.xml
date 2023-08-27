@@ -22,6 +22,7 @@
     <string name="azkar_category_evening">Вечерние</string>
     <string name="azkar_category_after_salah">Азкары после молитвы</string>
     <string name="azkar_category_other">Важные азкары</string>
+    <string name="main_settings">Settings</string>
 
     <plurals name="zikr_repetition_count">
         <item quantity="zero">%1$d РАЗ</item>
@@ -41,4 +42,15 @@
     <string name="quran">Коран</string>
     <string name="ibnhuzeyma">Ибн Хузейма</string>
     <string name="darimi">ад-Дарими</string>
+
+    <!--  Settings  -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_type_dark_theme">Тёмная тема</string>
+    <string name="settings_type_language">Язык перевода</string>
+
+    <!--  Theme settings  -->
+    <string name="theme_settings_title">Темная тема</string>
+    <string name="theme_settings_option_disabled">Выкл</string>
+    <string name="theme_settings_option_enabled">Вкл</string>
+    <string name="theme_settings_option_system">Авто</string>
 </resources>

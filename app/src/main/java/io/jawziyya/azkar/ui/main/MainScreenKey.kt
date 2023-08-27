@@ -19,7 +19,7 @@ data class MainScreenKey(val placeholder: String = "") : FragmentKey() {
             MainViewModel(
                 screenKey = this@MainScreenKey,
                 backstack = backstack,
-                fudulRepository = lookup(),
+                fadailRepository = lookup(),
             )
         )
     }

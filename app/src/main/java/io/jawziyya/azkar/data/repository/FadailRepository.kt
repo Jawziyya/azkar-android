@@ -2,7 +2,7 @@ package io.jawziyya.azkar.data.repository
 
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.data.helper.JsonParser
-import io.jawziyya.azkar.data.model.Fudul
+import io.jawziyya.azkar.data.model.Fadail
 import io.jawziyya.azkar.ui.core.intervalFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -15,23 +15,23 @@ import kotlin.random.Random
  * Created by uvays on 23.02.2023.
  */
 
-class FudulRepository(private val jsonParser: JsonParser) {
+class FadailRepository(private val jsonParser: JsonParser) {
 
     private val random = Random(System.currentTimeMillis())
 
-    private val mapStateFlow: MutableStateFlow<LinkedHashMap<Long, Fudul>> =
+    private val mapStateFlow: MutableStateFlow<LinkedHashMap<Long, Fadail>> =
         MutableStateFlow(LinkedHashMap())
 
     private suspend fun populate() {
         try {
-            mapStateFlow.value = jsonParser.parse<Fudul>(R.raw.fudul)
+            mapStateFlow.value = jsonParser.parse<Fadail>(R.raw.fadail)
                 .associateByTo(LinkedHashMap()) { fudul -> fudul.id }
         } catch (e: Exception) {
             Timber.e(e)
         }
     }
 
-    suspend fun getRandom(): Flow<Fudul> = withContext(Dispatchers.IO) {
+    suspend fun getRandom(): Flow<Fadail> = withContext(Dispatchers.IO) {
         if (mapStateFlow.value.isEmpty()) {
             populate()
         }

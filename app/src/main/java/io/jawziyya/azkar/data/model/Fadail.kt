@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class Fudul(
+data class Fadail(
     @Json(name = "id") val id: Long,
     @Json(name = "text_ru") val text: String?,
     @Json(name = "source") val sourceRaw: String?,
