@@ -4,21 +4,26 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import com.zhuinden.simplestack.Backstack
+import com.zhuinden.simplestack.ScopedServices
 import io.jawziyya.azkar.data.helper.intervalFlow
+import io.jawziyya.azkar.data.helper.observeKey
 import io.jawziyya.azkar.data.model.Zikr
 import io.jawziyya.azkar.data.repository.AzkarRepository
 import io.jawziyya.azkar.data.repository.FileRepository
 import io.jawziyya.azkar.ui.core.MediaPlayerState
-import io.jawziyya.azkar.ui.core.SimpleMediaPlayer
-import com.zhuinden.simplestack.Backstack
-import com.zhuinden.simplestack.ScopedServices
-import io.jawziyya.azkar.data.helper.observeKey
 import io.jawziyya.azkar.ui.core.Settings
+import io.jawziyya.azkar.ui.core.SimpleMediaPlayer
 import io.jawziyya.azkar.ui.hadith.HadithScreenKey
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -34,7 +39,7 @@ class ZikrViewModel(
     private val fileRepository: FileRepository,
     private val simpleMediaPlayer: SimpleMediaPlayer,
     private val sharedPreferences: SharedPreferences,
-) : ScopedServices.Registered {
+) : ScopedServices.Registered, ScopedServices.Activated {
 
     private val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Main
     private val coroutineScope = CoroutineScope(coroutineContext)
@@ -79,12 +84,14 @@ class ZikrViewModel(
                         )
                         startTimer()
                     }
+
                     MediaPlayerState.PAUSED -> {
                         timerJob?.cancel()
                         playerStateFlow.value = playerStateFlow.value.copy(
                             playing = false,
                         )
                     }
+
                     MediaPlayerState.STOPPED -> {
                         timerJob?.cancel()
                         playerStateFlow.value = playerStateFlow.value.copy(
@@ -92,6 +99,7 @@ class ZikrViewModel(
                             playing = false,
                         )
                     }
+
                     MediaPlayerState.COMPLETED -> {
                         timerJob?.cancel()
                         playerStateFlow.value = playerStateFlow.value.copy(
@@ -99,6 +107,7 @@ class ZikrViewModel(
                             playing = false,
                         )
                     }
+
                     MediaPlayerState.ERROR -> {}
                     MediaPlayerState.END -> {}
                 }
@@ -220,6 +229,12 @@ class ZikrViewModel(
 
     fun onHadithClick(id: Long, title: String) {
         backstack.goTo(HadithScreenKey(id, title))
+    }
+
+    override fun onServiceActive() {}
+
+    override fun onServiceInactive() {
+        simpleMediaPlayer.pause()
     }
 
     override fun onServiceUnregistered() {
