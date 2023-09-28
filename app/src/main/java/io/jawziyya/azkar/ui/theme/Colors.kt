@@ -18,6 +18,8 @@ fun defaultColors(): Colors = Colors(
     text = Color(0xFF000000),
     secondaryText = Color(0xFF515151),
     tertiaryText = Color(0xFFB4B4B4),
+    icon = Color(0xFF000000),
+    progressBackground = Color(0xFFF1F1F7),
 )
 
 fun darkColors(): Colors = Colors(
@@ -29,6 +31,8 @@ fun darkColors(): Colors = Colors(
     text = Color(0xFFFFFFFF),
     secondaryText = Color(0xFFCCCED9),
     tertiaryText = Color(0xFF5A5A5A),
+    icon = Color(0xFFFFFFFF),
+    progressBackground = Color(0xFF252525),
 )
 
 class Colors(
@@ -40,6 +44,8 @@ class Colors(
     text: Color,
     secondaryText: Color,
     tertiaryText: Color,
+    icon: Color,
+    progressBackground: Color,
 ) {
     var accent by mutableStateOf(accent)
         private set
@@ -65,6 +71,12 @@ class Colors(
     var tertiaryText by mutableStateOf(tertiaryText)
         private set
 
+    var icon by mutableStateOf(icon)
+        private set
+
+    var progressBackground by mutableStateOf(progressBackground)
+        private set
+
     fun copy(
         accent: Color = this.accent,
         alternativeAccent: Color = this.alternativeAccent,
@@ -74,15 +86,19 @@ class Colors(
         text: Color = this.text,
         secondaryText: Color = this.secondaryText,
         tertiaryText: Color = this.tertiaryText,
+        icon: Color = this.icon,
+        progressBackground: Color = this.progressBackground,
     ): Colors = Colors(
-        accent,
-        alternativeAccent,
-        background,
-        secondaryBackground,
-        contentBackground,
-        text,
-        secondaryText,
-        tertiaryText,
+        accent = accent,
+        alternativeAccent = alternativeAccent,
+        background = background,
+        secondaryBackground = secondaryBackground,
+        contentBackground = contentBackground,
+        text = text,
+        secondaryText = secondaryText,
+        tertiaryText = tertiaryText,
+        icon = icon,
+        progressBackground = progressBackground,
     )
 
     fun updateColorsFrom(other: Colors) {
@@ -94,5 +110,7 @@ class Colors(
         text = other.text
         secondaryText = other.secondaryText
         tertiaryText = other.tertiaryText
+        icon = other.icon
+        progressBackground = other.progressBackground
     }
 }

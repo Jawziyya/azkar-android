@@ -7,7 +7,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,94 +57,92 @@ fun MainScreen(
     onSettingsClick: () -> Unit,
     fadail: Fadail?,
 ) {
-    AppTheme {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colors.background),
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .verticalScroll(state = rememberScrollState())
+                .statusBarsPadding()
+                .navigationBarsPadding(),
         ) {
+            val emojiArray = stringArrayResource(R.array.app_name_emoji)
+            val random = remember { Random(System.currentTimeMillis()) }
+            val emoji = remember { emojiArray.random(random) }
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .padding(horizontal = 16.dp),
+                style = AppTheme.typography.header,
+                fontSize = 24.sp,
+                text = "${stringResource(R.string.app_name)} $emoji",
+                maxLines = 1,
+                color = AppTheme.colors.text,
+            )
+            DayAzkarSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                onAzkarCategoryClick = onAzkarCategoryClick,
+            )
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = rememberScrollState())
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(AppTheme.colors.contentBackground),
             ) {
-                val emojiArray = stringArrayResource(R.array.app_name_emoji)
-                val random = remember { Random(System.currentTimeMillis()) }
-                val emoji = remember { emojiArray.random(random) }
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp),
-                    style = AppTheme.typography.header,
-                    fontSize = 24.sp,
-                    text = "${stringResource(R.string.app_name)} $emoji",
-                    maxLines = 1,
-                    color = AppTheme.colors.text,
+                ListItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    imageRes = R.drawable.ic_mosque_32,
+                    title = stringResource(R.string.azkar_category_after_salah),
+                    onClick = remember {
+                        { onAzkarCategoryClick(AzkarCategory.AFTER_SALAH) }
+                    },
                 )
-                DayAzkarSection(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                    onAzkarCategoryClick = onAzkarCategoryClick,
+                ListItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    imageRes = R.drawable.ic_round_layers_32,
+                    colorFilter = ColorFilter.tint(colorSystemTeal),
+                    title = stringResource(R.string.azkar_category_other),
+                    onClick = remember {
+                        { onAzkarCategoryClick(AzkarCategory.OTHER) }
+                    },
                 )
-                Column(
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(AppTheme.colors.contentBackground),
-                ) {
-                    ListItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        imageRes = R.drawable.ic_mosque_32,
-                        title = stringResource(R.string.azkar_category_after_salah),
-                        onClick = remember {
-                            { onAzkarCategoryClick(AzkarCategory.AFTER_SALAH) }
-                        },
-                    )
-                    ListItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        imageRes = R.drawable.ic_round_layers_32,
-                        colorFilter = ColorFilter.tint(colorSystemTeal),
-                        title = stringResource(R.string.azkar_category_other),
-                        onClick = remember {
-                            { onAzkarCategoryClick(AzkarCategory.OTHER) }
-                        },
-                    )
-                }
+            }
 
-                Column(
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(AppTheme.colors.contentBackground),
-                ) {
-                    ListItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        imageRes = R.drawable.ic_settings_32,
-                        colorFilter = ColorFilter.tint(AppTheme.colors.tertiaryText),
-                        title = stringResource(R.string.main_settings),
-                        onClick = onSettingsClick,
-                    )
-                }
+//            Column(
+//                modifier = Modifier
+//                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+//                    .fillMaxWidth()
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(AppTheme.colors.contentBackground),
+//            ) {
+//                ListItem(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    imageRes = R.drawable.ic_settings_32,
+//                    colorFilter = ColorFilter.tint(AppTheme.colors.tertiaryText),
+//                    title = stringResource(R.string.main_settings),
+//                    onClick = onSettingsClick,
+//                )
+//            }
 
-                Crossfade(
-                    targetState = fadail,
-                    animationSpec = tween(durationMillis = 600),
-                    label = "",
-                ) { value ->
-                    if (value == null) return@Crossfade
+            Crossfade(
+                targetState = fadail,
+                animationSpec = tween(durationMillis = 600),
+                label = "",
+            ) { value ->
+                if (value == null) return@Crossfade
 
-                    FudulSection(
-                        modifier = Modifier.padding(top = 32.dp),
-                        fadail = value,
-                    )
-                }
+                FudulSection(
+                    modifier = Modifier.padding(top = 32.dp),
+                    fadail = value,
+                )
             }
         }
     }

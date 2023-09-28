@@ -35,25 +35,23 @@ fun SettingsScreen(
     items: List<Pair<SettingsType, String>>,
     onItemClick: (SettingsType) -> Unit,
 ) {
-    AppTheme {
-        Column(
-            modifier = Modifier.background(AppTheme.colors.background)
-        ) {
-            AppBar(
-                title = stringResource(R.string.settings_title),
-                onBackClick = onBackClick,
-            )
+    Column(
+        modifier = Modifier.background(AppTheme.colors.background)
+    ) {
+        AppBar(
+            title = stringResource(R.string.settings_title),
+            onBackClick = onBackClick,
+        )
 
-            Crossfade(targetState = items.isEmpty(), label = "") { empty ->
-                if (empty) {
-                    Box(modifier = Modifier.fillMaxSize())
-                } else {
-                    Content(
-                        modifier = Modifier,
-                        items = items,
-                        onItemClick = onItemClick,
-                    )
-                }
+        Crossfade(targetState = items.isEmpty(), label = "") { empty ->
+            if (empty) {
+                Box(modifier = Modifier.fillMaxSize())
+            } else {
+                Content(
+                    modifier = Modifier,
+                    items = items,
+                    onItemClick = onItemClick,
+                )
             }
         }
     }

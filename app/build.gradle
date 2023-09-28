@@ -14,8 +14,8 @@ android {
         applicationId "io.jawziyya.azkar"
         minSdk 24
         targetSdk 33
-        versionCode 6
-        versionName "1.1.1"
+        versionCode 7
+        versionName "1.2.0"
 
         vectorDrawables {
             useSupportLibrary true
@@ -92,8 +92,8 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     // Simple-Stack Navigation
-    implementation 'com.github.Zhuinden:simple-stack:2.5.0'
-    implementation 'com.github.Zhuinden:simple-stack-extensions:2.1.0'
+    implementation 'com.github.Zhuinden:simple-stack:2.8.0'
+    implementation 'com.github.Zhuinden:simple-stack-extensions:2.3.3'
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:31.3.0')

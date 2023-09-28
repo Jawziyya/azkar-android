@@ -11,14 +11,12 @@ import androidx.fragment.app.FragmentContainerView
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.SimpleStateChanger
 import com.zhuinden.simplestack.navigator.Navigator
-import com.zhuinden.simplestackextensions.fragments.DefaultFragmentKey
 import com.zhuinden.simplestackextensions.services.DefaultServiceProvider
 import io.jawziyya.azkar.App
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.ui.core.hideKeyboard
 import io.jawziyya.azkar.ui.core.navigation.AppStateChanger
 import io.jawziyya.azkar.ui.main.MainScreenKey
-import timber.log.Timber
 
 class AppActivity : AppCompatActivity() {
 
@@ -72,11 +70,6 @@ class AppActivity : AppCompatActivity() {
             .setGlobalServices(App.instance.globalServices)
             .setScopedServices(DefaultServiceProvider())
             .setStateChanger(SimpleStateChanger { stateChange ->
-                Timber.d(
-                    "app_navigation - %s",
-                    stateChange.getNewKeys<DefaultFragmentKey>().toString()
-                )
-
                 hideKeyboard()
                 fragmentStateChanger.handleStateChange(stateChange)
             })

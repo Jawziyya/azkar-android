@@ -2,8 +2,6 @@ package io.jawziyya.azkar.ui.zikr
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,26 +22,23 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import io.jawziyya.azkar.R
-import io.jawziyya.azkar.data.model.Zikr
 import io.jawziyya.azkar.data.model.AzkarCategory
 import io.jawziyya.azkar.data.model.Source
+import io.jawziyya.azkar.data.model.Zikr
 import io.jawziyya.azkar.ui.core.noRippleClickable
 import io.jawziyya.azkar.ui.core.quantityStringResource
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.core.toSp
 import io.jawziyya.azkar.ui.theme.*
 import io.jawziyya.azkar.ui.theme.component.AppBar
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 /**
@@ -69,46 +64,44 @@ fun ZikrScreen(
     onPageChange: () -> Unit,
     onHadithClick: (Long, String) -> Unit,
 ) {
-    AppTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppTheme.colors.background),
-        ) {
-            AppBar(
-                title = stringResource(azkarCategory.titleRes),
-                onBackClick = onBackClick,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colors.background),
+    ) {
+        AppBar(
+            title = stringResource(azkarCategory.titleRes),
+            onBackClick = onBackClick,
+        )
+        val pagerState = rememberPagerState(azkarIndex)
+
+        LaunchedEffect(pagerState.currentPage) {
+            onPageChange()
+        }
+
+        HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
+            count = zikrList.size,
+            state = pagerState,
+        ) { page ->
+            val azkar = zikrList[page]
+            val playerState = if (azkar.id == zikrPlayerState.azkarId) zikrPlayerState
+            else ZikrPlayerState()
+
+            Content(
+                modifier = Modifier,
+                zikr = azkar,
+                translationVisible = translationVisible,
+                onTranslationVisibilityChange = onTranslationVisibilityChange,
+                transliterationVisible = transliterationVisible,
+                onTransliterationVisibilityChange = onTransliterationVisibilityChange,
+                playerState = playerState,
+                onReplay = onReplay,
+                onPlayClick = onPlayClick,
+                onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
+                audioPlaybackSpeed = audioPlaybackSpeed,
+                onHadithClick = onHadithClick,
             )
-            val pagerState = rememberPagerState(azkarIndex)
-
-            LaunchedEffect(pagerState.currentPage) {
-                onPageChange()
-            }
-
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                count = zikrList.size,
-                state = pagerState,
-            ) { page ->
-                val azkar = zikrList[page]
-                val playerState = if (azkar.id == zikrPlayerState.azkarId) zikrPlayerState
-                else ZikrPlayerState()
-
-                Content(
-                    modifier = Modifier,
-                    zikr = azkar,
-                    translationVisible = translationVisible,
-                    onTranslationVisibilityChange = onTranslationVisibilityChange,
-                    transliterationVisible = transliterationVisible,
-                    onTransliterationVisibilityChange = onTransliterationVisibilityChange,
-                    playerState = playerState,
-                    onReplay = onReplay,
-                    onPlayClick = onPlayClick,
-                    onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
-                    audioPlaybackSpeed = audioPlaybackSpeed,
-                    onHadithClick = onHadithClick,
-                )
-            }
         }
     }
 }
@@ -364,22 +357,20 @@ private fun PlayerProgress(
     loading: Boolean,
 ) {
     val valueRaw = calculateProgress(timestamp, duration)
-    val value by animateFloatAsState(valueRaw)
-    Timber.d("valueRaw=$valueRaw")
-    Timber.d("value=$value")
+    val value by animateFloatAsState(valueRaw, label = "")
 
-    Crossfade(targetState = loading) { loadingValue ->
+    Crossfade(targetState = loading, label = "") { loadingValue ->
         if (loadingValue) {
             LinearProgressIndicator(
                 modifier = modifier.fillMaxWidth(),
-                backgroundColor = colorGray,
+                backgroundColor = AppTheme.colors.progressBackground,
                 color = AppTheme.colors.alternativeAccent,
             )
         } else {
             LinearProgressIndicator(
                 progress = value,
                 modifier = modifier.fillMaxWidth(),
-                backgroundColor = colorGray,
+                backgroundColor = AppTheme.colors.progressBackground,
                 color = AppTheme.colors.alternativeAccent,
             )
         }

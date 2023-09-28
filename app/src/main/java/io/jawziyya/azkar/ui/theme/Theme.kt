@@ -4,7 +4,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ProvideTextStyle
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,16 +32,16 @@ data class Typography(
 
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
-    val systemInDarkTheme = isSystemInDarkTheme()
-    val colors = if (systemInDarkTheme) darkColors() else defaultColors()
+    val darkTheme = isSystemInDarkTheme()
+    val colors = if (isSystemInDarkTheme()) darkColors() else defaultColors()
     val typography = AppTheme.typography
 
-    val rememberedColors = remember(systemInDarkTheme) { colors.copy() }
+    val rememberedColors = remember(darkTheme) { colors.copy() }
         .apply { updateColorsFrom(colors) }
     val selectionColors = rememberTextSelectionColors(rememberedColors)
 
     val systemUiController = rememberSystemUiController()
-    val useDarkIcons = !systemInDarkTheme
+    val useDarkIcons = !darkTheme
 
     DisposableEffect(systemUiController, useDarkIcons) {
         systemUiController.setSystemBarsColor(

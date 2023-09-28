@@ -1,8 +1,9 @@
 package io.jawziyya.azkar.ui.hadith
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.runtime.remember
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 import io.jawziyya.azkar.ui.core.BaseFragment
 
@@ -14,17 +15,15 @@ class HadithFragment : BaseFragment() {
 
     private val viewModel by lazy { lookup<HadithViewModel>() }
 
-    override fun setContent(view: ComposeView) {
-        val screenKey = getKey<HadithScreenKey>()
+    @Composable
+    override fun Content() {
+        val screenKey = remember { getKey<HadithScreenKey>() }
+        val hadith by viewModel.hadithFlow.collectAsState()
 
-        view.setContent {
-            val hadith by viewModel.hadithFlow.collectAsState()
-
-            HadithScreen(
-                title = screenKey.title,
-                onBackClick = requireActivity()::onBackPressed,
-                hadith = hadith,
-            )
-        }
+        HadithScreen(
+            title = screenKey.title,
+            onBackClick = requireActivity()::onBackPressed,
+            hadith = hadith,
+        )
     }
 }

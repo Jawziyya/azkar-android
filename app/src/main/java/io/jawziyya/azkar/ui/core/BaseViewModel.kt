@@ -5,11 +5,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel: ScopedServices.Registered {
 
-    protected val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    protected val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onServiceUnregistered() {
         coroutineScope.coroutineContext.cancelChildren()
