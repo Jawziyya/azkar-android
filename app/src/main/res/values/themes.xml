@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Core -->
-    <style name="Theme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 

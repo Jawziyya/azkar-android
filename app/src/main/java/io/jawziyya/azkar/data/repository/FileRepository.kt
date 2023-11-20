@@ -1,8 +1,7 @@
 package io.jawziyya.azkar.data.repository
 
-import io.jawziyya.azkar.App
-import io.jawziyya.azkar.data.model.Zikr
-import io.jawziyya.azkar.data.network.core.ApiService
+import android.app.Application
+import io.jawziyya.azkar.database.model.Azkar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.buffer
@@ -15,16 +14,13 @@ import java.io.*
  * Created by uvays on 09.06.2022.
  */
 
-class FileRepository(
-    private val application: App,
-    private val apiService: ApiService,
-) {
+class FileRepository(private val application: Application) {
 
     private val assetsCacheFileName: String = "ASSETS_CACHE_FILE_NAME"
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun getAudioFile(zikr: Zikr): File? = withContext(Dispatchers.IO) {
-        if (zikr.audioFileName == null) {
+    suspend fun getAudioFile(azkar: Azkar): File? = withContext(Dispatchers.IO) {
+        if (azkar.audioName == null) {
             return@withContext null
         }
 
@@ -37,42 +33,16 @@ class FileRepository(
         }
 
         try {
-            val source = application.assets.open(zikr.audioFileName).source()
+            val source = application.assets.open("audio/${azkar.audioName}").source()
             val sink = file.sink().buffer()
             sink.writeAll(source)
             sink.close()
         } catch (e: Exception) {
-            Timber.d(zikr.audioFileName)
+            Timber.d(azkar.audioName)
             Timber.e(e)
             return@withContext null
         }
 
         return@withContext file
-    }
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun getAudioFile(url: String): File? {
-        val dir = File(application.cacheDir, "audio")
-        dir.mkdirs()
-
-        val fileName = url.substringAfterLast("/")
-        val file = File(dir, fileName)
-
-        if (file.exists()) {
-            return file
-        }
-
-        val response = apiService.getFile(url)
-
-        try {
-            val sink = file.sink().buffer()
-            sink.writeAll(response.source())
-            sink.close()
-        } catch (e: Exception) {
-            Timber.e(e)
-            return null
-        }
-
-        return file
     }
 }

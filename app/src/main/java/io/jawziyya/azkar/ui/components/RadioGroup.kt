@@ -1,13 +1,14 @@
 package io.jawziyya.azkar.ui.components
 
-import android.widget.RadioGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,7 +49,12 @@ fun RadioGroup(
 
                 RadioButton(
                     selected = selected,
-                    onClick = null
+                    onClick = null,
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = AppTheme.colors.accent,
+                        unselectedColor = AppTheme.colors.accent.copy(alpha = 0.6f),
+                        disabledColor = AppTheme.colors.accent.copy(alpha = ContentAlpha.disabled)
+                    ),
                 )
             }
         }

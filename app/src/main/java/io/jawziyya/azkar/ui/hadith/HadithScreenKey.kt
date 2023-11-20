@@ -1,10 +1,17 @@
 package io.jawziyya.azkar.ui.hadith
 
-import androidx.fragment.app.Fragment
-import com.zhuinden.simplestack.ServiceBinder
-import com.zhuinden.simplestackextensions.servicesktx.add
-import com.zhuinden.simplestackextensions.servicesktx.lookup
-import io.jawziyya.azkar.ui.core.navigation.FragmentKey
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.zhuinden.simplestackcomposeintegration.core.LocalBackstack
+import com.zhuinden.simplestackcomposeintegration.services.rememberService
+import io.jawziyya.azkar.database.DatabaseHelper
+import io.jawziyya.azkar.database.model.Hadith
+import io.jawziyya.azkar.ui.core.navigation.ComposeKey
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -12,18 +19,21 @@ import kotlinx.parcelize.Parcelize
  */
 
 @Parcelize
-data class HadithScreenKey(val id: Long, val title: String) : FragmentKey() {
-    override fun instantiateFragment(): Fragment = HadithFragment()
-    override fun bindServices(serviceBinder: ServiceBinder) {
-        with(serviceBinder) {
-            add(
-                HadithViewModel(
-                    screenKey = this@HadithScreenKey,
-                    backstack = backstack,
-                    hadithRepository = lookup(),
-                )
-            )
+data class HadithScreenKey(val id: Long, val title: String) : ComposeKey() {
+    @Composable
+    override fun ScreenComposable(modifier: Modifier) {
+        val backstack = LocalBackstack.current
+        val databaseHelper = rememberService<DatabaseHelper>()
+        var hadith by remember { mutableStateOf<Hadith?>(null) }
+
+        LaunchedEffect(Unit) {
+            hadith = databaseHelper.getHadith(id)
         }
+
+        HadithScreen(
+            title = title,
+            onBackClick = backstack::goBack,
+            hadith = hadith,
+        )
     }
-    override val bottomSheet: Boolean get() = true
 }

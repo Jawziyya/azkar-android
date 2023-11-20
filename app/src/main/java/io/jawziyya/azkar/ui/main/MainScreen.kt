@@ -6,7 +6,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,11 +39,11 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import io.jawziyya.azkar.R
-import io.jawziyya.azkar.data.model.AzkarCategory
-import io.jawziyya.azkar.data.model.Fadail
+import io.jawziyya.azkar.database.model.AzkarCategory
+import io.jawziyya.azkar.database.model.Fadail
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.theme.AppTheme
-import io.jawziyya.azkar.ui.theme.colorSystemTeal
+import io.jawziyya.azkar.ui.theme.LocalDarkTheme
 import kotlin.random.Random
 
 /**
@@ -99,43 +98,49 @@ fun MainScreen(
             ) {
                 ListItem(
                     modifier = Modifier.fillMaxWidth(),
+                    imageRes = R.drawable.ic_bed_32,
+                    title = stringResource(R.string.azkar_category_night),
+                    onClick = remember {
+                        { onAzkarCategoryClick(AzkarCategory.Night) }
+                    },
+                )
+                ListItem(
+                    modifier = Modifier.fillMaxWidth(),
                     imageRes = R.drawable.ic_mosque_32,
                     title = stringResource(R.string.azkar_category_after_salah),
                     onClick = remember {
-                        { onAzkarCategoryClick(AzkarCategory.AFTER_SALAH) }
+                        { onAzkarCategoryClick(AzkarCategory.AfterSalah) }
                     },
                 )
                 ListItem(
                     modifier = Modifier.fillMaxWidth(),
                     imageRes = R.drawable.ic_round_layers_32,
-                    colorFilter = ColorFilter.tint(colorSystemTeal),
                     title = stringResource(R.string.azkar_category_other),
                     onClick = remember {
-                        { onAzkarCategoryClick(AzkarCategory.OTHER) }
+                        { onAzkarCategoryClick(AzkarCategory.Other) }
                     },
                 )
             }
 
-//            Column(
-//                modifier = Modifier
-//                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-//                    .fillMaxWidth()
-//                    .clip(RoundedCornerShape(12.dp))
-//                    .background(AppTheme.colors.contentBackground),
-//            ) {
-//                ListItem(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    imageRes = R.drawable.ic_settings_32,
-//                    colorFilter = ColorFilter.tint(AppTheme.colors.tertiaryText),
-//                    title = stringResource(R.string.main_settings),
-//                    onClick = onSettingsClick,
-//                )
-//            }
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(AppTheme.colors.contentBackground),
+            ) {
+                ListItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    imageRes = R.drawable.ic_settings_32,
+                    colorFilter = ColorFilter.tint(AppTheme.colors.tertiaryText),
+                    title = stringResource(R.string.main_settings),
+                    onClick = onSettingsClick,
+                )
+            }
 
             Crossfade(
                 targetState = fadail,
                 animationSpec = tween(durationMillis = 600),
-                label = "",
             ) { value ->
                 if (value == null) return@Crossfade
 
@@ -164,16 +169,16 @@ private fun DayAzkarSection(
             animationSpeed = .3f,
             title = stringResource(R.string.azkar_category_morning),
             onClick = remember {
-                { onAzkarCategoryClick(AzkarCategory.MORNING) }
+                { onAzkarCategoryClick(AzkarCategory.Morning) }
             },
         )
         DayAzkarItem(
             modifier = Modifier.weight(1f),
-            lottieRes = if (isSystemInDarkTheme()) R.raw.moon else R.raw.moon2,
+            lottieRes = if (LocalDarkTheme.current) R.raw.moon else R.raw.moon2,
             animationSpeed = .2f,
             title = stringResource(R.string.azkar_category_evening),
             onClick = remember {
-                { onAzkarCategoryClick(AzkarCategory.EVENING) }
+                { onAzkarCategoryClick(AzkarCategory.Evening) }
             },
         )
     }

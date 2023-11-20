@@ -36,14 +36,16 @@ fun SettingsScreen(
     onItemClick: (SettingsType) -> Unit,
 ) {
     Column(
-        modifier = Modifier.background(AppTheme.colors.background)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colors.background)
     ) {
         AppBar(
             title = stringResource(R.string.settings_title),
             onBackClick = onBackClick,
         )
 
-        Crossfade(targetState = items.isEmpty(), label = "") { empty ->
+        Crossfade(targetState = items.isEmpty()) { empty ->
             if (empty) {
                 Box(modifier = Modifier.fillMaxSize())
             } else {

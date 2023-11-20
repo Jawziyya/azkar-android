@@ -8,12 +8,12 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "io.jawziyya.azkar"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 7
         versionName "1.2.0"
 
@@ -65,26 +65,23 @@ android {
 }
 
 dependencies {
-
     // Core
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // Compose
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-    implementation 'androidx.activity:activity-compose:1.3.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.activity:activity-compose:1.8.0'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation "com.google.accompanist:accompanist-insets:$compose_accompanist_version"
     implementation "com.google.accompanist:accompanist-flowlayout:$compose_accompanist_version"
     implementation "com.google.accompanist:accompanist-swiperefresh:$compose_accompanist_version"
     implementation "com.google.accompanist:accompanist-pager:$compose_accompanist_version"
@@ -94,30 +91,15 @@ dependencies {
     // Simple-Stack Navigation
     implementation 'com.github.Zhuinden:simple-stack:2.8.0'
     implementation 'com.github.Zhuinden:simple-stack-extensions:2.3.3'
+    implementation 'com.github.Zhuinden:simple-stack-compose-integration:0.12.2'
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:31.3.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
-    // Retrofit
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
-
-    // Moshi
-    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-
-    // Chucker
-    debugImplementation "com.github.chuckerteam.chucker:library:3.5.2"
-    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.5.2"
-
-    implementation 'com.jakewharton.timber:timber:5.0.1'
-
     // Coil
-    implementation("io.coil-kt:coil:1.4.0")
-    implementation "com.github.skydoves:landscapist-coil:1.3.9"
+    implementation "io.coil-kt:coil:2.5.0"
 
     implementation "com.airbnb.android:lottie-compose:5.2.0"
     implementation 'com.github.jeziellago:compose-markdown:0.3.1'

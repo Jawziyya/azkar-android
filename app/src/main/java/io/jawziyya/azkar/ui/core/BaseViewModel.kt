@@ -6,9 +6,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 
-abstract class BaseViewModel: ScopedServices.Registered {
+abstract class BaseViewModel : ScopedServices.Registered {
 
     protected val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    override fun onServiceRegistered() {}
 
     override fun onServiceUnregistered() {
         coroutineScope.coroutineContext.cancelChildren()

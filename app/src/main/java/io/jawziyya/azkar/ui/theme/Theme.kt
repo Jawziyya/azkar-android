@@ -1,6 +1,5 @@
 package io.jawziyya.azkar.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ProvideTextStyle
@@ -31,9 +30,11 @@ data class Typography(
 )
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
-    val darkTheme = isSystemInDarkTheme()
-    val colors = if (isSystemInDarkTheme()) darkColors() else defaultColors()
+fun AppTheme(
+    darkTheme: Boolean,
+    content: @Composable () -> Unit,
+) {
+    val colors = if (darkTheme) darkColors() else defaultColors()
     val typography = AppTheme.typography
 
     val rememberedColors = remember(darkTheme) { colors.copy() }
@@ -56,6 +57,7 @@ fun AppTheme(content: @Composable () -> Unit) {
         LocalColors provides rememberedColors,
         LocalTypography provides typography,
         LocalTextSelectionColors provides selectionColors,
+        LocalDarkTheme provides darkTheme,
     ) {
         ProvideTextStyle(
             value = typography.title.copy(color = colors.text),
@@ -83,7 +85,13 @@ object AppTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalTypography.current
+    val darkTheme: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalDarkTheme.current
 }
+
+internal val LocalDarkTheme = staticCompositionLocalOf { false }
 
 internal val LocalColors = staticCompositionLocalOf { defaultColors() }
 
@@ -130,7 +138,7 @@ internal val LocalTypography = staticCompositionLocalOf {
             letterSpacing = 0.sp,
             fontFamily = notoNaskhArabicFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 34.sp,
+            fontSize = 30.sp,
             textDirection = TextDirection.Rtl,
         ),
         time = TextStyle(

@@ -2,21 +2,31 @@ package io.jawziyya.azkar.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.ViewGroup
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.core.view.WindowCompat
-import androidx.core.view.children
-import androidx.fragment.app.FragmentContainerView
 import com.zhuinden.simplestack.History
-import com.zhuinden.simplestack.SimpleStateChanger
-import com.zhuinden.simplestack.navigator.Navigator
+import com.zhuinden.simplestackcomposeintegration.core.ComposeNavigator
+import com.zhuinden.simplestackcomposeintegration.core.ComposeStateChanger
 import com.zhuinden.simplestackextensions.services.DefaultServiceProvider
+import com.zhuinden.simplestackextensions.servicesktx.get
 import io.jawziyya.azkar.App
-import io.jawziyya.azkar.R
-import io.jawziyya.azkar.ui.core.hideKeyboard
-import io.jawziyya.azkar.ui.core.navigation.AppStateChanger
+import io.jawziyya.azkar.data.helper.observeKey
+import io.jawziyya.azkar.ui.core.Settings
 import io.jawziyya.azkar.ui.main.MainScreenKey
+import io.jawziyya.azkar.ui.settings.DarkThemeOption
+import io.jawziyya.azkar.ui.theme.AppTheme
+import kotlinx.coroutines.flow.map
 
 class AppActivity : AppCompatActivity() {
 
@@ -39,46 +49,46 @@ class AppActivity : AppCompatActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val viewRoot = FragmentContainerView(this).apply {
-            id = R.id.root_fragment_container_id
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-            )
-        }
+        val animationConfiguration = ComposeStateChanger.AnimationConfiguration(
+            previousComposableTransition = { modifier, _, animationProgress ->
+                modifier.graphicsLayer { alpha = (1 - animationProgress.value) }
+            },
+            newComposableTransition = { modifier, _, animationProgress ->
+                modifier.graphicsLayer { alpha = 0 + animationProgress.value }
+            },
+        )
 
-        setContentView(viewRoot)
+        setContent {
+            val systemDarkTheme = isSystemInDarkTheme()
+            val darkThemeFlow = remember(systemDarkTheme) {
+                (application as App).globalServices
+                    .get<SharedPreferences>()
+                    .observeKey(Settings.darkThemeKey, DarkThemeOption.SYSTEM.name)
+                    .map { name -> DarkThemeOption.valueOf(name) }
+                    .map { selectedOption ->
+                        return@map when (selectedOption) {
+                            DarkThemeOption.DISABLED -> false
+                            DarkThemeOption.ENABLED -> true
+                            DarkThemeOption.SYSTEM -> systemDarkTheme
+                        }
+                    }
+            }
+            val darkTheme by darkThemeFlow.collectAsState(systemDarkTheme)
 
-        // Fix for window insets for fragment navigation
-        viewRoot.setOnApplyWindowInsetsListener { view, insets ->
-            var consumed = false
-
-            (view as ViewGroup).children.forEach { child ->
-                val childResult = child.dispatchApplyWindowInsets(insets)
-                if (childResult.isConsumed) {
-                    consumed = true
-                }
+            LaunchedEffect(darkTheme) {
+                val drawable = ColorDrawable(if (darkTheme) Color.BLACK else Color.WHITE)
+                window.setBackgroundDrawable(drawable)
             }
 
-            if (consumed) insets.consumeSystemWindowInsets() else insets
-        }
-
-        val fragmentStateChanger = AppStateChanger(supportFragmentManager, viewRoot.id)
-
-        Navigator
-            .configure()
-            .setGlobalServices(App.instance.globalServices)
-            .setScopedServices(DefaultServiceProvider())
-            .setStateChanger(SimpleStateChanger { stateChange ->
-                hideKeyboard()
-                fragmentStateChanger.handleStateChange(stateChange)
-            })
-            .install(this, viewRoot, History.of(MainScreenKey()))
-    }
-
-    override fun onBackPressed() {
-        if (!Navigator.onBackPressed(this)) {
-            super.onBackPressed()
+            AppTheme(darkTheme = darkTheme) {
+                ComposeNavigator(animationConfiguration = animationConfiguration) {
+                    createBackstack(
+                        initialKeys = History.of(MainScreenKey()),
+                        scopedServices = DefaultServiceProvider(),
+                        globalServices = (application as App).globalServices
+                    )
+                }
+            }
         }
     }
 }
