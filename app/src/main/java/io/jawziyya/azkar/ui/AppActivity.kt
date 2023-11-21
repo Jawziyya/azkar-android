@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
@@ -15,6 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.core.view.WindowCompat
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestackcomposeintegration.core.ComposeNavigator
 import com.zhuinden.simplestackcomposeintegration.core.ComposeStateChanger
@@ -33,6 +39,11 @@ class AppActivity : AppCompatActivity() {
     companion object {
         fun createIntent(context: Context): Intent = Intent(context, AppActivity::class.java)
     }
+
+    private val appUpdateLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { _ -> }
+
+    private lateinit var appUpdateManager: AppUpdateManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +99,34 @@ class AppActivity : AppCompatActivity() {
                         globalServices = (application as App).globalServices
                     )
                 }
+            }
+        }
+
+        appUpdateManager = AppUpdateManagerFactory.create(applicationContext)
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            val available = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+            val allowed = info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+
+            if (available && allowed) {
+                appUpdateManager.startUpdateFlowForResult(
+                    info,
+                    appUpdateLauncher,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE),
+                )
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                appUpdateManager.startUpdateFlowForResult(
+                    info,
+                    appUpdateLauncher,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE),
+                )
             }
         }
     }
