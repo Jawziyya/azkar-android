@@ -67,7 +67,7 @@ class SettingsViewModel(
                     title = resources.getString(R.string.settings_type_language),
                     titles = array.map { value -> resources.getString(value.title) },
                     values = array.map { value -> value.name },
-                    defaultValueIndex = LanguageOption.RUSSIAN.ordinal,
+                    defaultValueIndex = LanguageOption.getFallback().ordinal,
                 )
             }
         }
