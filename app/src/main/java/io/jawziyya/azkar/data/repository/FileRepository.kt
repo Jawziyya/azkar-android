@@ -8,7 +8,7 @@ import okio.buffer
 import okio.sink
 import okio.source
 import timber.log.Timber
-import java.io.*
+import java.io.File
 
 /**
  * Created by uvays on 09.06.2022.
@@ -18,7 +18,6 @@ class FileRepository(private val application: Application) {
 
     private val assetsCacheFileName: String = "ASSETS_CACHE_FILE_NAME"
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun getAudioFile(azkar: Azkar): File? = withContext(Dispatchers.IO) {
         if (azkar.audioName == null) {
             return@withContext null
