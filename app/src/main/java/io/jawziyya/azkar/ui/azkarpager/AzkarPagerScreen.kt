@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -121,53 +122,69 @@ fun AzkarPagerScreen(
                 )
             }
 
-            val haptic = LocalHapticFeedback.current
-            val repeatsLeft = azkarList[pagerState.currentPage].repeatsLeft
-            var counterClicked by remember { mutableStateOf(false) }
-
-            LaunchedEffect(repeatsLeft) {
-                if (!counterClicked) {
-                    return@LaunchedEffect
-                }
-
-                if (repeatsLeft > 0) {
-                    return@LaunchedEffect
-                }
-
-                val page = pagerState.currentPage + 1
-
-                if (page < pagerState.pageCount) {
-                    delay(300)
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    pagerState.scrollToPage(page)
-                    counterClicked = false
-                }
+            if (azkarCategory.counter) {
+                Counter(
+                    azkarList = azkarList,
+                    pagerState = pagerState,
+                    onClick = onCounterClick,
+                )
             }
+        }
+    }
+}
 
-            Box(modifier = Modifier.align(Alignment.BottomEnd)) {
-                Crossfade(repeatsLeft > 0, label = "") { visibleRepetitionButton ->
-                    if (visibleRepetitionButton) {
-                        FloatingActionButton(
-                            modifier = Modifier
-                                .navigationBarsPadding()
-                                .padding(16.dp),
-                            backgroundColor = AppTheme.colors.accent,
-                            onClick = remember(pagerState.currentPage) {
-                                {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    counterClicked = true
-                                    onCounterClick(azkarList[pagerState.currentPage])
-                                }
-                            },
-                        ) {
-                            Text(
-                                text = if (repeatsLeft > 0) repeatsLeft.toString() else "",
-                                style = AppTheme.typography.digits,
-                                fontSize = 20.sp,
-                                color = AppTheme.colors.textOnAccent,
-                            )
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun BoxScope.Counter(
+    azkarList: List<Azkar>,
+    pagerState: PagerState,
+    onClick: (Azkar) -> Unit
+) {
+    val haptic = LocalHapticFeedback.current
+    val repeatsLeft = azkarList[pagerState.currentPage].repeatsLeft
+    var counterClicked by remember { mutableStateOf(false) }
+
+    LaunchedEffect(repeatsLeft) {
+        if (!counterClicked) {
+            return@LaunchedEffect
+        }
+
+        if (repeatsLeft > 0) {
+            return@LaunchedEffect
+        }
+
+        val page = pagerState.currentPage + 1
+
+        if (page < pagerState.pageCount) {
+            delay(300)
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            pagerState.scrollToPage(page)
+            counterClicked = false
+        }
+    }
+
+    Box(modifier = Modifier.Companion.align(Alignment.BottomEnd)) {
+        Crossfade(repeatsLeft > 0, label = "") { visibleRepetitionButton ->
+            if (visibleRepetitionButton) {
+                FloatingActionButton(
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .padding(16.dp),
+                    backgroundColor = AppTheme.colors.accent,
+                    onClick = remember(pagerState.currentPage) {
+                        {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            counterClicked = true
+                            onClick(azkarList[pagerState.currentPage])
                         }
-                    }
+                    },
+                ) {
+                    Text(
+                        text = if (repeatsLeft > 0) repeatsLeft.toString() else "",
+                        style = AppTheme.typography.digits,
+                        fontSize = 20.sp,
+                        color = AppTheme.colors.textOnAccent,
+                    )
                 }
             }
         }
