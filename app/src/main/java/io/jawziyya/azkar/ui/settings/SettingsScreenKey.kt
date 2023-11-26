@@ -2,6 +2,7 @@ package io.jawziyya.azkar.ui.settings
 
 import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -13,6 +14,7 @@ import com.zhuinden.simplestackextensions.servicesktx.lookup
 import io.jawziyya.azkar.ui.core.navigation.ComposeKey
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class SettingsScreenKey(val placeholder: String = "") : ComposeKey() {
     override fun bindServices(serviceBinder: ServiceBinder) {

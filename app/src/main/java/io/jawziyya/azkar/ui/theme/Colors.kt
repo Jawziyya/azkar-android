@@ -16,6 +16,7 @@ fun defaultColors(): Colors = Colors(
     secondaryBackground = Color(0xFFF1F1F7),
     contentBackground = Color(0xFFFFFFFF),
     text = Color(0xFF000000),
+    textOnAccent = Color(0xFFFFFFFF),
     secondaryText = Color(0xFF515151),
     tertiaryText = Color(0xFFB4B4B4),
     icon = Color(0xFF000000),
@@ -29,6 +30,7 @@ fun darkColors(): Colors = Colors(
     secondaryBackground = Color(0xFF111111),
     contentBackground = Color(0xFF1B1A1B),
     text = Color(0xFFFFFFFF),
+    textOnAccent = Color(0xFFFFFFFF),
     secondaryText = Color(0xFFCCCED9),
     tertiaryText = Color(0xFF5A5A5A),
     icon = Color(0xFFFFFFFF),
@@ -42,6 +44,7 @@ class Colors(
     secondaryBackground: Color,
     contentBackground: Color,
     text: Color,
+    textOnAccent: Color,
     secondaryText: Color,
     tertiaryText: Color,
     icon: Color,
@@ -65,6 +68,9 @@ class Colors(
     var text by mutableStateOf(text)
         private set
 
+    var textOnAccent by mutableStateOf(textOnAccent)
+        private set
+
     var secondaryText by mutableStateOf(secondaryText)
         private set
 
@@ -84,6 +90,7 @@ class Colors(
         secondaryBackground: Color = this.secondaryBackground,
         contentBackground: Color = this.contentBackground,
         text: Color = this.text,
+        textOnAccent: Color = this.textOnAccent,
         secondaryText: Color = this.secondaryText,
         tertiaryText: Color = this.tertiaryText,
         icon: Color = this.icon,
@@ -95,6 +102,7 @@ class Colors(
         secondaryBackground = secondaryBackground,
         contentBackground = contentBackground,
         text = text,
+        textOnAccent = textOnAccent,
         secondaryText = secondaryText,
         tertiaryText = tertiaryText,
         icon = icon,

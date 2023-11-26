@@ -1,6 +1,7 @@
 package io.jawziyya.azkar.ui.hadith
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ import kotlinx.parcelize.Parcelize
  * Created by uvays on 23.02.2023.
  */
 
+@Immutable
 @Parcelize
 data class HadithScreenKey(val id: Long, val title: String) : ComposeKey() {
     @Composable

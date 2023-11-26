@@ -8,7 +8,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Azkar(
     val id: Long,
+    val azkarCategoryId: Long,
     val repeats: Int,
+    val repeatsLeft: Int,
     val category: AzkarCategory,
     val source: List<Source>,
     val title: String,

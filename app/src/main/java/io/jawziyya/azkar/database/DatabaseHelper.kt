@@ -103,6 +103,7 @@ class DatabaseHelper(
 
         val columns = listOfNotNull(
             "azkar.id",
+            "`azkar+azkar_group`.`id`as azkarCategoryId",
             "azkar.repeats",
             "azkar.source",
             "azkar.text",
@@ -140,8 +141,10 @@ class DatabaseHelper(
 
                 return@get Azkar(
                     id = cursor.getLong(cursor.getColumnIndexOrThrow("id")),
+                    azkarCategoryId = cursor.getLong(cursor.getColumnIndexOrThrow("azkarCategoryId")),
                     category = AzkarCategory.fromValue(categoryValue)!!,
                     repeats = cursor.getInt(cursor.getColumnIndexOrThrow("repeats")),
+                    repeatsLeft = cursor.getInt(cursor.getColumnIndexOrThrow("repeats")),
                     source = Source.fromValue(cursor.getString(cursor.getColumnIndexOrThrow("source"))),
                     text = cursor.getString(cursor.getColumnIndexOrThrow("text")),
                     title = cursor.getStringOrNull(cursor.getColumnIndex("title"))

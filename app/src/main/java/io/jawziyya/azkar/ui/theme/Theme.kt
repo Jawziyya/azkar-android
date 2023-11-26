@@ -26,7 +26,7 @@ data class Typography(
     val sectionHeader: TextStyle,
     val tip: TextStyle,
     val arabic: TextStyle,
-    val time: TextStyle,
+    val digits: TextStyle,
 )
 
 @Composable
@@ -141,7 +141,7 @@ internal val LocalTypography = staticCompositionLocalOf {
             fontSize = 30.sp,
             textDirection = TextDirection.Rtl,
         ),
-        time = TextStyle(
+        digits = TextStyle(
             letterSpacing = 0.sp,
             fontSize = 14.sp,
             fontFamily = googleSansFamily,

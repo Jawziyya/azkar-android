@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,6 +25,7 @@ import io.jawziyya.azkar.ui.theme.component.AppBar
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class ThemeSettingsScreenKey(
     val sharedPreferencesKey: String,

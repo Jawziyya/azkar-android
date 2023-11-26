@@ -22,6 +22,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -70,7 +71,7 @@ fun MainScreen(
         ) {
             val emojiArray = stringArrayResource(R.array.app_name_emoji)
             val random = remember { Random(System.currentTimeMillis()) }
-            val emoji = remember { emojiArray.random(random) }
+            val emoji = rememberSaveable { emojiArray.random(random) }
 
             Text(
                 modifier = Modifier
@@ -141,6 +142,7 @@ fun MainScreen(
             Crossfade(
                 targetState = fadail,
                 animationSpec = tween(durationMillis = 600),
+                label = "",
             ) { value ->
                 if (value == null) return@Crossfade
 

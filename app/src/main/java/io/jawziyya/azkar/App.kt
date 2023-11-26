@@ -4,6 +4,7 @@ import android.app.Application
 import com.zhuinden.simplestack.GlobalServices
 import com.zhuinden.simplestackextensions.servicesktx.add
 import com.zhuinden.simplestackextensions.servicesktx.rebind
+import io.jawziyya.azkar.data.repository.AzkarCounterRepository
 import io.jawziyya.azkar.database.DatabaseHelper
 import timber.log.Timber
 
@@ -32,6 +33,7 @@ class App : Application() {
                 .add(resources)
                 .add(sharedPreferences)
                 .add(databaseHelper)
+                .add(AzkarCounterRepository())
                 .build()
     }
 }

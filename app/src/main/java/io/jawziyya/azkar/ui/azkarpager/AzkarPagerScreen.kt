@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +43,7 @@ import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.core.toSp
 import io.jawziyya.azkar.ui.theme.*
 import io.jawziyya.azkar.ui.theme.component.AppBar
+import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
 /**
@@ -65,6 +68,7 @@ fun AzkarPagerScreen(
     audioPlaybackSpeed: AudioPlaybackSpeed,
     onPageChange: () -> Unit,
     onHadithClick: (Long, String) -> Unit,
+    onCounterClick: (Azkar) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -89,31 +93,83 @@ fun AzkarPagerScreen(
             onPageChange()
         }
 
-        HorizontalPager(
-            modifier = Modifier.fillMaxSize(),
-            state = pagerState,
-            beyondBoundsPageCount = 1,
-            key = { index -> azkarList[index].id }
-        ) { page ->
-            val azkar = azkarList[page]
-            val playerState =
-                if (azkar.id == azkarPlayerState.azkarId) azkarPlayerState
-                else AzkarPlayerState()
+        Box {
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                state = pagerState,
+                beyondBoundsPageCount = 1,
+                key = { index -> azkarList[index].id }
+            ) { page ->
+                val azkar = azkarList[page]
+                val playerState =
+                    if (azkar.id == azkarPlayerState.azkarId) azkarPlayerState
+                    else AzkarPlayerState()
 
-            Content(
-                modifier = Modifier,
-                azkar = azkar,
-                translationVisible = translationVisible,
-                onTranslationVisibilityChange = onTranslationVisibilityChange,
-                transliterationVisible = transliterationVisible,
-                onTransliterationVisibilityChange = onTransliterationVisibilityChange,
-                playerState = playerState,
-                onReplay = onReplay,
-                onPlayClick = onPlayClick,
-                onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
-                audioPlaybackSpeed = audioPlaybackSpeed,
-                onHadithClick = onHadithClick,
-            )
+                Content(
+                    modifier = Modifier,
+                    azkar = azkar,
+                    translationVisible = translationVisible,
+                    onTranslationVisibilityChange = onTranslationVisibilityChange,
+                    transliterationVisible = transliterationVisible,
+                    onTransliterationVisibilityChange = onTransliterationVisibilityChange,
+                    playerState = playerState,
+                    onReplay = onReplay,
+                    onPlayClick = onPlayClick,
+                    onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
+                    audioPlaybackSpeed = audioPlaybackSpeed,
+                    onHadithClick = onHadithClick,
+                )
+            }
+
+            val haptic = LocalHapticFeedback.current
+            val repeatsLeft = azkarList[pagerState.currentPage].repeatsLeft
+            var counterClicked by remember { mutableStateOf(false) }
+
+            LaunchedEffect(repeatsLeft) {
+                if (!counterClicked) {
+                    return@LaunchedEffect
+                }
+
+                if (repeatsLeft > 0) {
+                    return@LaunchedEffect
+                }
+
+                val page = pagerState.currentPage + 1
+
+                if (page < pagerState.pageCount) {
+                    delay(300)
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    pagerState.scrollToPage(page)
+                    counterClicked = false
+                }
+            }
+
+            Box(modifier = Modifier.align(Alignment.BottomEnd)) {
+                Crossfade(repeatsLeft > 0, label = "") { visibleRepetitionButton ->
+                    if (visibleRepetitionButton) {
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .navigationBarsPadding()
+                                .padding(16.dp),
+                            backgroundColor = AppTheme.colors.accent,
+                            onClick = remember(pagerState.currentPage) {
+                                {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    counterClicked = true
+                                    onCounterClick(azkarList[pagerState.currentPage])
+                                }
+                            },
+                        ) {
+                            Text(
+                                text = if (repeatsLeft > 0) repeatsLeft.toString() else "",
+                                style = AppTheme.typography.digits,
+                                fontSize = 20.sp,
+                                color = AppTheme.colors.textOnAccent,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -138,6 +194,7 @@ private fun Content(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .navigationBarsPadding()
+            .padding(bottom = 88.dp)
     ) {
         Text(
             modifier = Modifier
@@ -301,7 +358,7 @@ private fun Player(
             Text(
                 modifier = Modifier,
                 text = millisToTimeText(playerState.timestamp),
-                style = AppTheme.typography.time,
+                style = AppTheme.typography.digits,
                 textAlign = TextAlign.Center,
                 color = AppTheme.colors.tertiaryText,
             )
@@ -341,7 +398,7 @@ private fun Player(
                     .rippleClickable { onAudioPlaybackSpeedChange(zikr) }
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 text = "${audioPlaybackSpeed.value}x",
-                style = AppTheme.typography.time,
+                style = AppTheme.typography.digits,
                 fontSize = 14.dp.toSp(),
                 lineHeight = 16.dp.toSp(),
                 color = AppTheme.colors.alternativeAccent,
@@ -349,7 +406,7 @@ private fun Player(
             Text(
                 modifier = Modifier,
                 text = millisToTimeText(playerState.duration - playerState.timestamp),
-                style = AppTheme.typography.time,
+                style = AppTheme.typography.digits,
                 textAlign = TextAlign.Center,
                 color = AppTheme.colors.tertiaryText,
             )
@@ -481,6 +538,7 @@ fun ZikrScreenPreview() {
     val zikrList = listOf(
         Azkar(
             id = 31,
+            azkarCategoryId = 101,
             category = AzkarCategory.Other,
             source = listOf(Source.AHMAD, Source.ABUDAUD),
             title = "При облачении в новую одежду",
@@ -490,9 +548,10 @@ fun ZikrScreenPreview() {
             order = 1,
             audioName = null,
             repeats = 1,
+            repeatsLeft = 1,
             hadith = null,
             notes = null,
-            benefits = "Кто произнесёт эти слова днём, будучи убеждённым в них, и умрёт в тот же день до наступления вечера, окажется среди обитателей Рая."
+            benefits = "Кто произнесёт эти слова днём, будучи убеждённым в них, и умрёт в тот же день до наступления вечера, окажется среди обитателей Рая.",
         )
     )
 
@@ -512,5 +571,6 @@ fun ZikrScreenPreview() {
         audioPlaybackSpeed = AudioPlaybackSpeed.DEFAULT,
         onPageChange = {},
         onHadithClick = { _, _ -> },
+        onCounterClick = {},
     )
 }

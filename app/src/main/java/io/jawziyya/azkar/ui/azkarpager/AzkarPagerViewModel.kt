@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.ScopedServices
 import io.jawziyya.azkar.data.helper.observeKey
+import io.jawziyya.azkar.data.repository.AzkarCounterRepository
 import io.jawziyya.azkar.data.repository.FileRepository
 import io.jawziyya.azkar.database.DatabaseHelper
 import io.jawziyya.azkar.database.model.Azkar
@@ -20,7 +21,11 @@ import io.jawziyya.azkar.ui.hadith.HadithScreenKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -36,13 +41,22 @@ class AzkarPagerViewModel(
     private val fileRepository: FileRepository,
     private val simpleMediaPlayer: SimpleMediaPlayer,
     private val sharedPreferences: SharedPreferences,
+    private val azkarCounterRepository: AzkarCounterRepository,
 ) : BaseViewModel(), ScopedServices.Activated {
 
     val azkarCategoryFlow: MutableStateFlow<AzkarCategory> =
         MutableStateFlow(screenKey.azkarCategory)
     val azkarIndexFlow: MutableStateFlow<Int> = MutableStateFlow(screenKey.azkarIndex)
 
-    val azkarListFlow: MutableStateFlow<List<Azkar>> = MutableStateFlow(emptyList())
+    private val _azkarListFlow: MutableStateFlow<List<Azkar>> = MutableStateFlow(emptyList())
+    val azkarListFlow: StateFlow<List<Azkar>>
+        get() = combine(_azkarListFlow, azkarCounterRepository.stateFlow) { azkarList, map ->
+            return@combine azkarList.map { azkar ->
+                val repetitions = (map[azkar.azkarCategoryId] ?: 0)
+                return@map azkar.copy(repeatsLeft = azkar.repeats - repetitions)
+            }
+        }
+            .stateIn(coroutineScope, SharingStarted.WhileSubscribed(), emptyList())
 
     val translationVisibleFlow: Flow<Boolean>
         get() = sharedPreferences.observeKey(Settings.translationVisibleKey, true)
@@ -62,7 +76,7 @@ class AzkarPagerViewModel(
 
     override fun onServiceRegistered() {
         coroutineScope.launch {
-            azkarListFlow.value = databaseHelper.getAzkarList(screenKey.azkarCategory)
+            _azkarListFlow.value = databaseHelper.getAzkarList(screenKey.azkarCategory)
         }
 
         coroutineScope.launch {
@@ -235,5 +249,9 @@ class AzkarPagerViewModel(
     override fun onServiceUnregistered() {
         super.onServiceUnregistered()
         simpleMediaPlayer.destroy()
+    }
+
+    fun onCounterClick(azkar: Azkar) {
+        azkarCounterRepository.onEvent(azkar)
     }
 }

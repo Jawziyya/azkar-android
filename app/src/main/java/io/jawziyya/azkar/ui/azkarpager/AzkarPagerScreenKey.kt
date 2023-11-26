@@ -2,6 +2,7 @@ package io.jawziyya.azkar.ui.azkarpager
 
 import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import kotlinx.parcelize.Parcelize
  * Created by uvays on 04.02.2023.
  */
 
+@Immutable
 @Parcelize
 data class AzkarPagerScreenKey(
     private val azkarCategoryName: String,
@@ -49,6 +51,7 @@ data class AzkarPagerScreenKey(
                     fileRepository = FileRepository(application = application),
                     simpleMediaPlayer = SimpleMediaPlayer(application),
                     sharedPreferences = lookup(),
+                    azkarCounterRepository = lookup(),
                 )
             )
         }
@@ -82,6 +85,7 @@ data class AzkarPagerScreenKey(
             audioPlaybackSpeed = audioPlaybackSpeed,
             onPageChange = viewModel::onPageChange,
             onHadithClick = viewModel::onHadithClick,
+            onCounterClick = viewModel::onCounterClick,
         )
     }
 }

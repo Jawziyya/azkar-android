@@ -1,10 +1,12 @@
 package io.jawziyya.azkar.ui.azkarlist
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,6 +23,7 @@ import kotlinx.parcelize.Parcelize
  * Created by uvays on 03.02.2023.
  */
 
+@Immutable
 @Parcelize
 data class AzkarListScreenKey(private val azkarCategoryName: String) : ComposeKey() {
     constructor(azkarCategory: AzkarCategory) : this(azkarCategoryName = azkarCategory.name)
@@ -31,7 +34,7 @@ data class AzkarListScreenKey(private val azkarCategoryName: String) : ComposeKe
     override fun ScreenComposable(modifier: Modifier) {
         val backstack = LocalBackstack.current
         val databaseHelper = rememberService<DatabaseHelper>()
-        var azkarList by remember { mutableStateOf(emptyList<Azkar>()) }
+        var azkarList by rememberSaveable { mutableStateOf(emptyList<Azkar>()) }
 
         LaunchedEffect(Unit) {
             azkarList = databaseHelper.getAzkarList(azkarCategory)
