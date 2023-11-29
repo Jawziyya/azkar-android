@@ -50,9 +50,9 @@ class AzkarPagerViewModel(
 
     private val _azkarListFlow: MutableStateFlow<List<Azkar>> = MutableStateFlow(emptyList())
     val azkarListFlow: StateFlow<List<Azkar>>
-        get() = combine(_azkarListFlow, azkarCounterRepository.stateFlow) { azkarList, map ->
+        get() = combine(_azkarListFlow, azkarCounterRepository.stateFlow) { azkarList, counter ->
             return@combine azkarList.map { azkar ->
-                val repetitions = (map[azkar.azkarCategoryId] ?: 0)
+                val repetitions = (counter.map[azkar.azkarCategoryId] ?: 0)
                 return@map azkar.copy(repeatsLeft = azkar.repeats - repetitions)
             }
         }
