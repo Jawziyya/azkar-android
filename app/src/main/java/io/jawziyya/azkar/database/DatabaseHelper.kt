@@ -23,7 +23,7 @@ import kotlin.coroutines.resume
 class DatabaseHelper(
     context: Context,
     private val sharedPreferences: SharedPreferences,
-) : SQLiteAssetHelper(context, "azkar.db", null, 1) {
+) : SQLiteAssetHelper(context, "azkar.db", null, 2) {
 
     private val database: SQLiteDatabase by lazy { readableDatabase }
 
