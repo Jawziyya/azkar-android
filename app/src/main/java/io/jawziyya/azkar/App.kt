@@ -24,7 +24,7 @@ class App : Application() {
         }
 
         val sharedPreferences = getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
-        val databaseHelper = DatabaseHelper(this, sharedPreferences)
+        val databaseHelper = DatabaseHelper(this, resources, sharedPreferences)
 
         globalServices =
             GlobalServices

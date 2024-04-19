@@ -2,11 +2,13 @@ package io.jawziyya.azkar.database
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.CancellationSignal
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
+import io.jawziyya.azkar.R
 import io.jawziyya.azkar.database.core.SQLiteAssetHelper
 import io.jawziyya.azkar.database.model.Azkar
 import io.jawziyya.azkar.database.model.AzkarCategory
@@ -22,6 +24,7 @@ import kotlin.coroutines.resume
 
 class DatabaseHelper(
     context: Context,
+    private val resources: Resources,
     private val sharedPreferences: SharedPreferences,
 ) : SQLiteAssetHelper(context, "azkar.db", null, 2) {
 
@@ -134,7 +137,7 @@ class DatabaseHelper(
             arguments = arrayOf(category.value),
             mapper = { cursor ->
                 val order = cursor.getInt(cursor.getColumnIndexOrThrow("order"))
-                val fallbackTitle = "Зикр №${order}"
+                val fallbackTitle = "${resources.getString(R.string.dhikr_fallback_name)}${order}"
                 val categoryValue = cursor.getString(cursor.getColumnIndexOrThrow("category"))
                 val benefits = cursor.getStringOrNull(cursor.getColumnIndex("benefits"))
                     ?.takeIf { it.isNotBlank() }

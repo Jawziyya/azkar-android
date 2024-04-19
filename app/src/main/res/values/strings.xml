@@ -18,41 +18,43 @@
         <item>❄️</item>
     </string-array>
 
-    <string name="azkar_category_morning">Утренние</string>
-    <string name="azkar_category_evening">Вечерние</string>
-    <string name="azkar_category_night">Перед сном</string>
-    <string name="azkar_category_after_salah">Азкары после молитвы</string>
-    <string name="azkar_category_other">Важные азкары</string>
-    <string name="main_settings">Настройки</string>
+    <string name="azkar_category_morning">Morning</string>
+    <string name="azkar_category_evening">Evening</string>
+    <string name="azkar_category_night">Bedtime</string>
+    <string name="azkar_category_after_salah">Adhkar after salah</string>
+    <string name="azkar_category_other">Important adhkar</string>
+    <string name="main_settings">Settings</string>
 
     <plurals name="zikr_repetition_count">
-        <item quantity="zero">%1$d РАЗ</item>
-        <item quantity="one">%1$d РАЗ</item>
-        <item quantity="two">%1$d РАЗА</item>
-        <item quantity="few">%1$d РАЗА</item>
-        <item quantity="many">%1$d РАЗ</item>
-        <item quantity="other">%1$d РАЗ</item>
+        <item quantity="zero">%1$d TIMES</item>
+        <item quantity="one">ONCE</item>
+        <item quantity="two">TWICE</item>
+        <item quantity="few">%1$d TIMES</item>
+        <item quantity="many">%1$d TIMES</item>
+        <item quantity="other">%1$d TIMES</item>
     </plurals>
     
-    <string name="bukhari">аль-Бухари</string>
-    <string name="muslim">Муслим</string>
-    <string name="tirmidhi">ат-Тирмизи</string>
-    <string name="ahmad">Ахмад</string>
-    <string name="abudaud">Абу Дауд</string>
-    <string name="nasai">ан-Насаи</string>
-    <string name="quran">Коран</string>
-    <string name="ibnhuzeyma">Ибн Хузейма</string>
-    <string name="darimi">ад-Дарими</string>
+    <string name="bukhari">Al-Bukhari</string>
+    <string name="muslim">Muslim</string>
+    <string name="tirmidhi">At-Tirmidhi</string>
+    <string name="ahmad">Ahmad</string>
+    <string name="abudaud">Abu Daud</string>
+    <string name="nasai">An-Nasai</string>
+    <string name="quran">Quran</string>
+    <string name="ibnhuzeyma">Ibn Huzeyma</string>
+    <string name="darimi">Al-Darimi</string>
+
+    <string name="dhikr_fallback_name">Dhikr №</string>
 
     <!--  Settings  -->
-    <string name="settings_title">Настройки</string>
-    <string name="settings_type_dark_theme">Тёмная тема</string>
-    <string name="settings_type_language">Язык перевода</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_type_dark_theme">Dark theme</string>
+    <string name="settings_type_language">Translation</string>
 
     <!--  Theme settings  -->
-    <string name="theme_settings_option_disabled">Выкл</string>
-    <string name="theme_settings_option_enabled">Вкл</string>
-    <string name="theme_settings_option_system">Авто</string>
+    <string name="theme_settings_option_disabled">Off</string>
+    <string name="theme_settings_option_enabled">On</string>
+    <string name="theme_settings_option_system">Auto</string>
 
     <!--  Language option  -->
     <string name="language_en">English language</string>
@@ -65,5 +67,5 @@
     <string name="language_kz">Қазақ тілі</string>
 
     <!--  Hadith  -->
-    <string name="hadith_source_title">Привёл</string>
+    <string name="hadith_source_title">Narrated by</string>
 </resources>
