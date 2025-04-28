@@ -1,7 +1,9 @@
-package io.jawziyya.azkar.ui.theme.component
+package io.jawziyya.azkar.ui.theme.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,12 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,42 +35,51 @@ import io.jawziyya.azkar.ui.theme.AppTheme
 fun AppBar(
     modifier: Modifier = Modifier,
     title: String,
+    statusBarsPadding: Boolean = true,
     onBackClick: (() -> Unit)? = null,
+    @DrawableRes backDrawableRes: Int = R.drawable.ic_arrow_back_24,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(4.dp)
-            .background(AppTheme.colors.background)
-            .statusBarsPadding(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (onBackClick != null) {
-            Image(
+    val statusBarsPaddingModifier =
+        if (statusBarsPadding) Modifier.statusBarsPadding() else Modifier
+
+    Column {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(AppTheme.colors.background)
+                .then(statusBarsPaddingModifier),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (onBackClick != null) {
+                Image(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .rippleClickable(onBackClick)
+                        .padding(16.dp),
+                    painter = painterResource(backDrawableRes),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(AppTheme.colors.icon),
+                )
+            } else {
+                Spacer(modifier = Modifier.size(56.dp))
+            }
+
+            Text(
                 modifier = Modifier
-                    .clip(CircleShape)
-                    .rippleClickable(onBackClick)
-                    .padding(16.dp),
-                painter = painterResource(R.drawable.ic_arrow_back_24),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(AppTheme.colors.icon),
+                    .weight(1f)
+                    .padding(vertical = 16.dp),
+                style = AppTheme.typography.header,
+                text = title,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                color = AppTheme.colors.text,
             )
-        } else {
+
             Spacer(modifier = Modifier.size(56.dp))
         }
-
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 16.dp),
-            style = AppTheme.typography.header,
-            text = title,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            color = AppTheme.colors.text,
+        Divider(
+            color = AppTheme.colors.divider,
         )
-
-        Spacer(modifier = Modifier.size(56.dp))
     }
 }
 

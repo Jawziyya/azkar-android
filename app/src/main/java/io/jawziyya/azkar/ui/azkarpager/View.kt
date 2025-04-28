@@ -3,22 +3,42 @@ package io.jawziyya.azkar.ui.azkarpager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Replay
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +54,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
+import androidx.navigation.toRoute
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.database.model.Azkar
 import io.jawziyya.azkar.database.model.AzkarCategory
@@ -42,33 +65,87 @@ import io.jawziyya.azkar.ui.core.noRippleClickable
 import io.jawziyya.azkar.ui.core.quantityStringResource
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.core.toSp
-import io.jawziyya.azkar.ui.theme.*
-import io.jawziyya.azkar.ui.theme.component.AppBar
+import io.jawziyya.azkar.ui.hadith.HadithScreen
+import io.jawziyya.azkar.ui.theme.AppTheme
+import io.jawziyya.azkar.ui.theme.components.AppBar
 import kotlinx.coroutines.delay
+import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import java.util.concurrent.TimeUnit
 
 /**
  * Created by uvays on 07.06.2022.
  */
 
-@OptIn(ExperimentalFoundationApi::class)
+@Serializable
+data class AzkarPagerScreen(
+    val categoryName: String,
+    val index: Int = 0,
+)
+
 @Composable
-fun AzkarPagerScreen(
-    onBackClick: () -> Unit,
+fun AzkarPagerScreenView(
+    navController: NavHostController,
+    navBackStackEntry: NavBackStackEntry,
+) {
+    val args = navBackStackEntry.toRoute<AzkarPagerScreen>()
+    val azkarCategory = AzkarCategory.valueOf(args.categoryName)
+    val azkarIndex = args.index
+
+    val viewModel: AzkarPagerViewModel = koinViewModel(
+        parameters = { parametersOf(azkarCategory, azkarIndex) },
+    )
+
+    val azkarList by viewModel.azkarListFlow.collectAsState()
+    val translationVisible by viewModel.translationVisibleFlow.collectAsState(true)
+    val transliterationVisible by viewModel.transliterationVisibleFlow.collectAsState(true)
+    val playerState by viewModel.playerStateFlow.collectAsState()
+    val audioPlaybackSpeed by viewModel.audioPlaybackSpeedFlow.collectAsState()
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.onDispose()
+        }
+    }
+
+    View(
+        azkarCategory = azkarCategory,
+        azkarIndex = azkarIndex,
+        azkarList = azkarList,
+        translationVisible = translationVisible,
+        transliterationVisible = transliterationVisible,
+        playerState = playerState,
+        audioPlaybackSpeed = audioPlaybackSpeed,
+        onBackClick = navController::popBackStack,
+        onHadithClick = { id -> navController.navigate(HadithScreen(id = id)) },
+        onPageChange = viewModel::onPageChange,
+        onTranslationVisibilityChange = viewModel::onTranslationVisibilityChange,
+        onTransliterationVisibilityChange = viewModel::onTransliterationVisibilityChange,
+        onReplayClick = viewModel::onReplayClick,
+        onPlayClick = viewModel::onPlayClick,
+        onAudioPlaybackSpeedChangeClick = viewModel::onAudioPlaybackSpeedChangeClick,
+        onCounterClick = viewModel::onCounterClick,
+    )
+}
+
+@Composable
+private fun View(
     azkarCategory: AzkarCategory,
     azkarIndex: Int,
     azkarList: List<Azkar>,
     translationVisible: Boolean,
-    onTranslationVisibilityChange: (Boolean) -> Unit,
     transliterationVisible: Boolean,
-    onTransliterationVisibilityChange: (Boolean) -> Unit,
-    azkarPlayerState: AzkarPlayerState,
-    onReplay: (Azkar) -> Unit,
-    onPlayClick: (Azkar) -> Unit,
-    onAudioPlaybackSpeedChange: (Azkar) -> Unit,
+    playerState: AzkarPlayerState,
     audioPlaybackSpeed: AudioPlaybackSpeed,
+    onBackClick: () -> Unit,
+    onHadithClick: (Long) -> Unit,
     onPageChange: () -> Unit,
-    onHadithClick: (Long, String) -> Unit,
+    onTranslationVisibilityChange: (Boolean) -> Unit,
+    onTransliterationVisibilityChange: (Boolean) -> Unit,
+    onReplayClick: (Azkar) -> Unit,
+    onPlayClick: (Azkar) -> Unit,
+    onAudioPlaybackSpeedChangeClick: (Azkar) -> Unit,
     onCounterClick: (Azkar) -> Unit,
 ) {
     Column(
@@ -81,64 +158,59 @@ fun AzkarPagerScreen(
             onBackClick = onBackClick,
         )
 
-        if (azkarList.isEmpty()) {
-            return@Column
-        }
+        Crossfade(azkarList.isEmpty(), label = "") { isEmpty ->
+            if (isEmpty) return@Crossfade
 
-        val pagerState = rememberPagerState(
-            initialPage = azkarIndex,
-            pageCount = remember(azkarList.size) { { azkarList.size } },
-        )
+            val pagerState = rememberPagerState(
+                initialPage = azkarIndex,
+                pageCount = remember(azkarList.size) { { azkarList.size } },
+            )
 
-        LaunchedEffect(pagerState.currentPage) {
-            onPageChange()
-        }
+            LaunchedEffect(pagerState.currentPage) {
+                onPageChange()
+            }
 
-        Box {
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState,
-                beyondBoundsPageCount = 1,
-                key = { index -> azkarList[index].id }
-            ) { page ->
-                val azkar = azkarList[page]
-                val playerState =
-                    if (azkar.id == azkarPlayerState.azkarId) azkarPlayerState
+            Box {
+                HorizontalPager(modifier = Modifier.fillMaxSize(),
+                    state = pagerState,
+                    beyondViewportPageCount = 1,
+                    key = { index -> azkarList[index].id }) { page ->
+                    val azkar = azkarList[page]
+                    val playerStateValue = if (azkar.id == playerState.azkarId) playerState
                     else AzkarPlayerState()
 
-                Content(
-                    modifier = Modifier,
-                    azkar = azkar,
-                    translationVisible = translationVisible,
-                    onTranslationVisibilityChange = onTranslationVisibilityChange,
-                    transliterationVisible = transliterationVisible,
-                    onTransliterationVisibilityChange = onTransliterationVisibilityChange,
-                    playerState = playerState,
-                    onReplay = onReplay,
-                    onPlayClick = onPlayClick,
-                    onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
-                    audioPlaybackSpeed = audioPlaybackSpeed,
-                    onHadithClick = onHadithClick,
-                )
+                    Content(
+                        modifier = Modifier,
+                        azkar = azkar,
+                        translationVisible = translationVisible,
+                        onTranslationVisibilityChange = onTranslationVisibilityChange,
+                        transliterationVisible = transliterationVisible,
+                        onTransliterationVisibilityChange = onTransliterationVisibilityChange,
+                        playerState = playerStateValue,
+                        onReplay = onReplayClick,
+                        onPlayClick = onPlayClick,
+                        onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChangeClick,
+                        audioPlaybackSpeed = audioPlaybackSpeed,
+                        onHadithClick = onHadithClick,
+                    )
+                }
+
+                if (azkarCategory.counter) {
+                    Counter(
+                        azkarList = azkarList,
+                        pagerState = pagerState,
+                        onClick = onCounterClick,
+                    )
+                }
             }
 
-            if (azkarCategory.counter) {
-                Counter(
-                    azkarList = azkarList,
-                    pagerState = pagerState,
-                    onClick = onCounterClick,
-                )
-            }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BoxScope.Counter(
-    azkarList: List<Azkar>,
-    pagerState: PagerState,
-    onClick: (Azkar) -> Unit
+    azkarList: List<Azkar>, pagerState: PagerState, onClick: (Azkar) -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
     val repeatsLeft = azkarList[pagerState.currentPage].repeatsLeft
@@ -204,7 +276,7 @@ private fun Content(
     onPlayClick: (Azkar) -> Unit,
     onAudioPlaybackSpeedChange: (Azkar) -> Unit,
     audioPlaybackSpeed: AudioPlaybackSpeed,
-    onHadithClick: (Long, String) -> Unit,
+    onHadithClick: (Long) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -292,15 +364,14 @@ private fun Content(
                 )
             }
 
-            val (clickableModifier, textDecoration) =
-                if (azkar.hadith == null) Pair(
-                    Modifier,
-                    TextDecoration.None,
-                )
-                else Pair(
-                    Modifier.noRippleClickable { onHadithClick(azkar.hadith, "Источник") },
-                    TextDecoration.Underline,
-                )
+            val (clickableModifier, textDecoration) = if (azkar.hadith == null) Pair(
+                Modifier,
+                TextDecoration.None,
+            )
+            else Pair(
+                Modifier.noRippleClickable { onHadithClick(azkar.hadith) },
+                TextDecoration.Underline,
+            )
 
             Column(
                 modifier = Modifier.then(clickableModifier)
@@ -313,9 +384,8 @@ private fun Content(
                     color = AppTheme.colors.tertiaryText,
                 )
                 val sourceRes = azkar.source.firstOrNull()?.titleRes
-                val sourceText =
-                    if (sourceRes != null) stringResource(sourceRes).uppercase()
-                    else ""
+                val sourceText = if (sourceRes != null) stringResource(sourceRes).uppercase()
+                else ""
 
                 Text(
                     modifier = Modifier,
@@ -572,22 +642,22 @@ fun ZikrScreenPreview() {
         )
     )
 
-    AzkarPagerScreen(
-        onBackClick = {},
+    View(
         azkarCategory = AzkarCategory.Other,
         azkarIndex = 0,
         azkarList = zikrList,
         translationVisible = true,
-        onTranslationVisibilityChange = {},
         transliterationVisible = true,
-        onTransliterationVisibilityChange = {},
-        azkarPlayerState = AzkarPlayerState(),
-        onPlayClick = {},
-        onReplay = {},
-        onAudioPlaybackSpeedChange = {},
+        playerState = AzkarPlayerState(),
         audioPlaybackSpeed = AudioPlaybackSpeed.DEFAULT,
+        onBackClick = {},
+        onHadithClick = {},
         onPageChange = {},
-        onHadithClick = { _, _ -> },
+        onTranslationVisibilityChange = {},
+        onTransliterationVisibilityChange = {},
+        onReplayClick = {},
+        onPlayClick = {},
+        onAudioPlaybackSpeedChangeClick = {},
         onCounterClick = {},
     )
 }

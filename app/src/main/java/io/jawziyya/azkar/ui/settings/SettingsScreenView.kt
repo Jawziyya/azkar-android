@@ -15,24 +15,85 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
 import io.jawziyya.azkar.R
+import io.jawziyya.azkar.ui.core.Settings
 import io.jawziyya.azkar.ui.core.rippleClickable
+import io.jawziyya.azkar.ui.settings.reminder.ReminderSettingsScreen
 import io.jawziyya.azkar.ui.theme.AppTheme
-import io.jawziyya.azkar.ui.theme.component.AppBar
+import io.jawziyya.azkar.ui.theme.components.AppBar
+import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
+
+@Serializable
+data object SettingsScreen
 
 @Composable
-fun SettingsScreen(
-    onBackClick: () -> Unit,
+fun SettingsScreenView(
+    navController: NavHostController,
+    navBackStackEntry: NavBackStackEntry,
+) {
+    val resources = LocalContext.current.resources
+    val viewModel: SettingsViewModel = koinViewModel()
+    val items by viewModel.itemsFlow.collectAsState()
+
+    View(
+        items = items,
+        onBackClick = navController::popBackStack,
+        onItemClick = { type ->
+            when (type) {
+                SettingsType.DARK_THEME -> {
+                    navController.navigate(
+                        SettingsDetailScreen(
+                            sharedPreferencesKey = Settings.darkThemeKey,
+                            title = resources.getString(R.string.settings_type_dark_theme),
+                            titles = DarkThemeOption.entries.map { value ->
+                                resources.getString(value.title)
+                            },
+                            values = DarkThemeOption.entries.map { value -> value.name },
+                            defaultValueIndex = DarkThemeOption.SYSTEM.ordinal,
+                        ),
+                    )
+                }
+
+                SettingsType.LANGUAGE -> {
+                    navController.navigate(
+                        SettingsDetailScreen(
+                            sharedPreferencesKey = Settings.languageKey,
+                            title = resources.getString(R.string.settings_type_language),
+                            titles = LanguageOption.entries.map { value ->
+                                resources.getString(value.title)
+                            },
+                            values = LanguageOption.entries.map { value -> value.name },
+                            defaultValueIndex = LanguageOption.getFallback().ordinal,
+                        ),
+                    )
+                }
+
+                SettingsType.REMINDER -> {
+                    navController.navigate(ReminderSettingsScreen)
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun View(
     items: List<Pair<SettingsType, String>>,
+    onBackClick: () -> Unit,
     onItemClick: (SettingsType) -> Unit,
 ) {
     Column(
@@ -129,13 +190,9 @@ private fun ListItem(
 @Preview
 @Composable
 private fun SettingsScreenPreview() {
-    val typeArray = remember {
-        SettingsType.values().map { type -> type to "Не выбрано" }
-    }
-
-    SettingsScreen(
+    View(
+        items = emptyList(),
         onBackClick = {},
-        items = typeArray,
         onItemClick = {},
     )
 }

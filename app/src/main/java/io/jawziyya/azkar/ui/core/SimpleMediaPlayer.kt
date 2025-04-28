@@ -61,7 +61,6 @@ class SimpleMediaPlayer(private val application: Application) {
         stateFlow.tryEmit(MediaPlayerState.STARTED)
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun play(
         uri: Uri,
         timestamp: Long = 0L,
@@ -129,7 +128,6 @@ class SimpleMediaPlayer(private val application: Application) {
         stateFlow.tryEmit(MediaPlayerState.STOPPED)
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun replay() = withContext(Dispatchers.IO) {
         val validState = isValidState(
             MediaPlayerState.PREPARED,

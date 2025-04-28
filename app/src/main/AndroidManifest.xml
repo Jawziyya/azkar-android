@@ -4,17 +4,21 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name="App"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
         android:fullBackupOnly="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.App"
-        tools:replace="android:allowBackup">
+        android:theme="@style/Theme.App">
 
         <activity
             android:name=".ui.AppActivity"
@@ -24,7 +28,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.App"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,12 +40,25 @@
             android:value="${crashlyticsCollectionEnabled}" />
 
         <receiver
+            android:name=".ui.reminder.ReminderReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".data.helper.TimeChangeReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
                 <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".data.helper.BootCompletedReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

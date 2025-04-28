@@ -1,38 +1,28 @@
 package io.jawziyya.azkar.ui
 
+import android.Manifest
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.core.view.WindowCompat
+import androidx.core.content.ContextCompat
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.zhuinden.simplestack.History
-import com.zhuinden.simplestackcomposeintegration.core.ComposeNavigator
-import com.zhuinden.simplestackcomposeintegration.core.ComposeStateChanger
-import com.zhuinden.simplestackextensions.services.DefaultServiceProvider
-import com.zhuinden.simplestackextensions.servicesktx.get
-import io.jawziyya.azkar.App
-import io.jawziyya.azkar.data.helper.observeKey
-import io.jawziyya.azkar.ui.core.Settings
-import io.jawziyya.azkar.ui.main.MainScreenKey
-import io.jawziyya.azkar.ui.settings.DarkThemeOption
-import io.jawziyya.azkar.ui.theme.AppTheme
-import kotlinx.coroutines.flow.map
+import io.jawziyya.azkar.data.repository.AzkarCounterRepository
+import org.koin.android.ext.android.inject
+
 
 class AppActivity : AppCompatActivity() {
 
@@ -40,6 +30,7 @@ class AppActivity : AppCompatActivity() {
         fun createIntent(context: Context): Intent = Intent(context, AppActivity::class.java)
     }
 
+    private val azkarCounterRepository: AzkarCounterRepository by inject()
     private val appUpdateLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { _ -> }
 
@@ -58,48 +49,14 @@ class AppActivity : AppCompatActivity() {
             return
         }
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        val animationConfiguration = ComposeStateChanger.AnimationConfiguration(
-            previousComposableTransition = { modifier, _, animationProgress ->
-                modifier.graphicsLayer { alpha = (1 - animationProgress.value) }
-            },
-            newComposableTransition = { modifier, _, animationProgress ->
-                modifier.graphicsLayer { alpha = 0 + animationProgress.value }
-            },
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
         )
 
+        lifecycle.addObserver(azkarCounterRepository)
+
         setContent {
-            val systemDarkTheme = isSystemInDarkTheme()
-            val darkThemeFlow = remember(systemDarkTheme) {
-                (application as App).globalServices
-                    .get<SharedPreferences>()
-                    .observeKey(Settings.darkThemeKey, DarkThemeOption.SYSTEM.name)
-                    .map { name -> DarkThemeOption.valueOf(name) }
-                    .map { selectedOption ->
-                        return@map when (selectedOption) {
-                            DarkThemeOption.DISABLED -> false
-                            DarkThemeOption.ENABLED -> true
-                            DarkThemeOption.SYSTEM -> systemDarkTheme
-                        }
-                    }
-            }
-            val darkTheme by darkThemeFlow.collectAsState(systemDarkTheme)
-
-            LaunchedEffect(darkTheme) {
-                val drawable = ColorDrawable(if (darkTheme) Color.BLACK else Color.WHITE)
-                window.setBackgroundDrawable(drawable)
-            }
-
-            AppTheme(darkTheme = darkTheme) {
-                ComposeNavigator(animationConfiguration = animationConfiguration) {
-                    createBackstack(
-                        initialKeys = History.of(MainScreenKey()),
-                        scopedServices = DefaultServiceProvider(),
-                        globalServices = (application as App).globalServices
-                    )
-                }
-            }
+            ComposableApp()
         }
 
         appUpdateManager = AppUpdateManagerFactory.create(applicationContext)
@@ -115,9 +72,33 @@ class AppActivity : AppCompatActivity() {
                 )
             }
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1000)
+        }
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            requestPermissions(arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), 1000)
+//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
+//            if (alarmManager?.canScheduleExactAlarms() == false) {
+//                Intent().also { intent ->
+//                    intent.action = android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+//                    startActivity(intent)
+//                }
+//            }
+
+            if (alarmManager?.canScheduleExactAlarms() == false) {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                intent.setData(Uri.fromParts("package", packageName, null))
+                startActivity(intent)
+            }
+        }
     }
 
-    override fun onResume() {
+    override
+    fun onResume() {
         super.onResume()
 
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->

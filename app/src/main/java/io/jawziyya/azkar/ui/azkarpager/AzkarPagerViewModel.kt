@@ -4,20 +4,18 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.core.net.toUri
-import com.zhuinden.simplestack.Backstack
-import com.zhuinden.simplestack.ScopedServices
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.jawziyya.azkar.data.helper.observeKey
 import io.jawziyya.azkar.data.repository.AzkarCounterRepository
 import io.jawziyya.azkar.data.repository.FileRepository
 import io.jawziyya.azkar.database.DatabaseHelper
 import io.jawziyya.azkar.database.model.Azkar
 import io.jawziyya.azkar.database.model.AzkarCategory
-import io.jawziyya.azkar.ui.core.BaseViewModel
 import io.jawziyya.azkar.ui.core.MediaPlayerState
 import io.jawziyya.azkar.ui.core.Settings
 import io.jawziyya.azkar.ui.core.SimpleMediaPlayer
 import io.jawziyya.azkar.ui.core.intervalFlow
-import io.jawziyya.azkar.ui.hadith.HadithScreenKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,19 +32,19 @@ import timber.log.Timber
  */
 
 class AzkarPagerViewModel(
-    private val screenKey: AzkarPagerScreenKey,
-    private val backstack: Backstack,
+    private val azkarCategory: AzkarCategory,
+    private val azkarIndex: Int,
     private val application: Application,
     private val databaseHelper: DatabaseHelper,
     private val fileRepository: FileRepository,
     private val simpleMediaPlayer: SimpleMediaPlayer,
     private val sharedPreferences: SharedPreferences,
     private val azkarCounterRepository: AzkarCounterRepository,
-) : BaseViewModel(), ScopedServices.Activated {
+) : ViewModel() {
 
     val azkarCategoryFlow: MutableStateFlow<AzkarCategory> =
-        MutableStateFlow(screenKey.azkarCategory)
-    val azkarIndexFlow: MutableStateFlow<Int> = MutableStateFlow(screenKey.azkarIndex)
+        MutableStateFlow(azkarCategory)
+    val azkarIndexFlow: MutableStateFlow<Int> = MutableStateFlow(azkarIndex)
 
     private val _azkarListFlow: MutableStateFlow<List<Azkar>> = MutableStateFlow(emptyList())
     val azkarListFlow: StateFlow<List<Azkar>>
@@ -56,7 +54,7 @@ class AzkarPagerViewModel(
                 return@map azkar.copy(repeatsLeft = azkar.repeats - repetitions)
             }
         }
-            .stateIn(coroutineScope, SharingStarted.WhileSubscribed(), emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     val translationVisibleFlow: Flow<Boolean>
         get() = sharedPreferences.observeKey(Settings.translationVisibleKey, true)
@@ -74,12 +72,12 @@ class AzkarPagerViewModel(
 
     private val audioPlaybackSpeedArray = AudioPlaybackSpeed.values()
 
-    override fun onServiceRegistered() {
-        coroutineScope.launch {
-            _azkarListFlow.value = databaseHelper.getAzkarList(screenKey.azkarCategory)
+    init {
+        viewModelScope.launch {
+            _azkarListFlow.value = databaseHelper.getAzkarList(azkarCategory)
         }
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             simpleMediaPlayer.getStateFlow().collect { state ->
                 when (state) {
                     MediaPlayerState.IDLE -> {}
@@ -160,7 +158,7 @@ class AzkarPagerViewModel(
         when {
             playerState.azkarId != azkar.id -> play(azkar)
             playerState.uri == null -> play(azkar)
-            else -> coroutineScope.launch {
+            else -> viewModelScope.launch {
                 simpleMediaPlayer.play(
                     uri = playerState.uri,
                     timestamp = timestamp,
@@ -172,7 +170,7 @@ class AzkarPagerViewModel(
 
     private fun play(azkar: Azkar) {
         getAudioFileJob?.cancel()
-        getAudioFileJob = coroutineScope.launch {
+        getAudioFileJob = viewModelScope.launch {
             try {
                 playerStateFlow.value = playerStateFlow.value.copy(
                     azkarId = azkar.id,
@@ -207,7 +205,7 @@ class AzkarPagerViewModel(
 
     private fun startTimer() {
         timerJob?.cancel()
-        timerJob = coroutineScope.launch {
+        timerJob = viewModelScope.launch {
             intervalFlow(0L, 50L).catch { Timber.e(it) }.collect {
                 val playerState = playerStateFlow.value
 
@@ -236,22 +234,16 @@ class AzkarPagerViewModel(
         sharedPreferences.edit { putBoolean(Settings.transliterationVisibleKey, !value) }
     }
 
-    fun onHadithClick(id: Long, title: String) {
-        backstack.goTo(HadithScreenKey(id, title))
-    }
-
-    override fun onServiceActive() {}
-
-    override fun onServiceInactive() {
-        simpleMediaPlayer.pause()
-    }
-
-    override fun onServiceUnregistered() {
-        super.onServiceUnregistered()
-        simpleMediaPlayer.destroy()
-    }
-
     fun onCounterClick(azkar: Azkar) {
         azkarCounterRepository.onEvent(azkar)
+    }
+
+    fun onDispose() {
+        onPageChange()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        simpleMediaPlayer.destroy()
     }
 }

@@ -60,7 +60,7 @@ fun AppTheme(
         LocalDarkTheme provides darkTheme,
     ) {
         ProvideTextStyle(
-            value = typography.title.copy(color = colors.text),
+            value = typography.title.copy(color = rememberedColors.text),
             content = content,
         )
     }

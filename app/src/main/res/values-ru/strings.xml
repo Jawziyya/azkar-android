@@ -50,6 +50,7 @@
     <string name="settings_title">Настройки</string>
     <string name="settings_type_dark_theme">Тёмная тема</string>
     <string name="settings_type_language">Язык перевода</string>
+    <string name="settings_type_reminder">Напоминания</string>
 
     <!--  Theme settings  -->
     <string name="theme_settings_option_disabled">Выкл</string>
@@ -67,5 +68,11 @@
     <string name="language_kz">Қазақ тілі</string>
 
     <!--  Hadith  -->
+    <string name="hadith_title">Источник</string>
     <string name="hadith_source_title">Привёл</string>
+
+    <!--  Reminder  -->
+    <string name="reminder_message_morning">Время утренних азкаров</string>
+    <string name="reminder_message_evening">Время вечерних азкаров</string>
+    <string name="reminder_message_djuma">Время дуа в день джума</string>
 </resources>

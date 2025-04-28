@@ -21,6 +21,7 @@ fun defaultColors(): Colors = Colors(
     tertiaryText = Color(0xFFB4B4B4),
     icon = Color(0xFF000000),
     progressBackground = Color(0xFFF1F1F7),
+    divider = Color(0xFFDADADA),
 )
 
 fun darkColors(): Colors = Colors(
@@ -35,6 +36,7 @@ fun darkColors(): Colors = Colors(
     tertiaryText = Color(0xFF5A5A5A),
     icon = Color(0xFFFFFFFF),
     progressBackground = Color(0xFF252525),
+    divider = Color(0xFF252525),
 )
 
 class Colors(
@@ -49,6 +51,7 @@ class Colors(
     tertiaryText: Color,
     icon: Color,
     progressBackground: Color,
+    divider: Color,
 ) {
     var accent by mutableStateOf(accent)
         private set
@@ -83,6 +86,9 @@ class Colors(
     var progressBackground by mutableStateOf(progressBackground)
         private set
 
+    var divider by mutableStateOf(divider)
+        private set
+
     fun copy(
         accent: Color = this.accent,
         alternativeAccent: Color = this.alternativeAccent,
@@ -95,6 +101,7 @@ class Colors(
         tertiaryText: Color = this.tertiaryText,
         icon: Color = this.icon,
         progressBackground: Color = this.progressBackground,
+        divider: Color = this.divider,
     ): Colors = Colors(
         accent = accent,
         alternativeAccent = alternativeAccent,
@@ -107,6 +114,7 @@ class Colors(
         tertiaryText = tertiaryText,
         icon = icon,
         progressBackground = progressBackground,
+        divider = divider,
     )
 
     fun updateColorsFrom(other: Colors) {
@@ -120,5 +128,6 @@ class Colors(
         tertiaryText = other.tertiaryText
         icon = other.icon
         progressBackground = other.progressBackground
+        divider = other.divider
     }
 }

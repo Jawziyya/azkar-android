@@ -1,4 +1,4 @@
-package io.jawziyya.azkar.ui.components
+package io.jawziyya.azkar.ui.theme.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

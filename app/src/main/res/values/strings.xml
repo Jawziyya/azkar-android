@@ -33,7 +33,7 @@
         <item quantity="many">%1$d TIMES</item>
         <item quantity="other">%1$d TIMES</item>
     </plurals>
-    
+
     <string name="bukhari">Al-Bukhari</string>
     <string name="muslim">Muslim</string>
     <string name="tirmidhi">At-Tirmidhi</string>
@@ -50,6 +50,7 @@
     <string name="settings_title">Settings</string>
     <string name="settings_type_dark_theme">Dark theme</string>
     <string name="settings_type_language">Translation</string>
+    <string name="settings_type_reminder">Reminder</string>
 
     <!--  Theme settings  -->
     <string name="theme_settings_option_disabled">Off</string>
@@ -67,5 +68,11 @@
     <string name="language_kz">Қазақ тілі</string>
 
     <!--  Hadith  -->
+    <string name="hadith_title">Source</string>
     <string name="hadith_source_title">Narrated by</string>
+
+    <!--  Reminder  -->
+    <string name="reminder_message_morning">Время утренних азкаров</string>
+    <string name="reminder_message_evening">Время вечерних азкаров</string>
+    <string name="reminder_message_djuma">Время дуа в день джума</string>
 </resources>

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -42,20 +45,50 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.database.model.AzkarCategory
 import io.jawziyya.azkar.database.model.Fadail
+import io.jawziyya.azkar.ui.azkarlist.AzkarListScreen
+import io.jawziyya.azkar.ui.azkarpager.AzkarPagerScreen
 import io.jawziyya.azkar.ui.core.rippleClickable
+import io.jawziyya.azkar.ui.settings.SettingsScreen
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.LocalDarkTheme
+import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
 /**
  * Created by uvays on 05.06.2022.
  */
 
+@Serializable
+data object MainScreen
+
 @Composable
-fun MainScreen(
+fun MainScreenView(navController: NavHostController, navBackStackEntry: NavBackStackEntry) {
+    val viewModel: MainViewModel = koinViewModel()
+    val fadail by viewModel.fadailFlow.collectAsState(null)
+
+    View(
+        fadail = fadail,
+        onAzkarCategoryClick = { category ->
+            if (category.main) {
+                navController.navigate(
+                    AzkarPagerScreen(categoryName = category.name),
+                )
+            } else {
+                navController.navigate(
+                    AzkarListScreen(categoryName = category.name),
+                )
+            }
+        },
+        onSettingsClick = { navController.navigate(SettingsScreen) },
+    )
+}
+
+@Composable
+private fun View(
+    fadail: Fadail?,
     onAzkarCategoryClick: (AzkarCategory) -> Unit,
     onSettingsClick: () -> Unit,
-    fadail: Fadail?,
 ) {
     Column(
         modifier = Modifier
@@ -299,9 +332,9 @@ private fun FudulSection(
 @Preview
 @Composable
 private fun MainScreenPreview() {
-    MainScreen(
-        onAzkarCategoryClick = remember { {} },
-        onSettingsClick = remember { {} },
+    View(
         fadail = null,
+        onAzkarCategoryClick = {},
+        onSettingsClick = {},
     )
 }
