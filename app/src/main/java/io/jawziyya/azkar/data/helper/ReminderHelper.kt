@@ -10,18 +10,23 @@ import io.jawziyya.azkar.data.datasource.ReminderDataSource
 import io.jawziyya.azkar.data.model.ReminderData
 import io.jawziyya.azkar.ui.core.Settings
 import io.jawziyya.azkar.ui.reminder.ReminderReceiver
+import io.jawziyya.azkar.ui.settings.reminder.Regularity
 import io.jawziyya.azkar.ui.settings.reminder.ReminderType
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZonedDateTime
+import java.time.temporal.TemporalAdjusters
 import java.util.Date
 
 class ReminderHelper(
@@ -32,9 +37,15 @@ class ReminderHelper(
     private val sharedPreferences: SharedPreferences,
 ) {
 
-    private val forceUpdateSharedFlow: MutableSharedFlow<Unit> = MutableSharedFlow()
+    private var job: Job? = null
 
     init {
+        initAlarms()
+    }
+
+    fun initAlarms() {
+        Timber.d("initAlarms()")
+
         val dailyFlow = combine(
             flow = sharedPreferences.observeKey(
                 key = Settings.reminderDailyEnabled,
@@ -42,11 +53,11 @@ class ReminderHelper(
             ),
             flow2 = sharedPreferences.observeKey(
                 key = Settings.reminderMorningTime,
-                default = ReminderType.Morning.defaultValue,
+                default = ReminderType.Morning.defaultValue.toSecondOfDay(),
             ),
             flow3 = sharedPreferences.observeKey(
                 key = Settings.reminderEveningTime,
-                default = ReminderType.Evening.defaultValue,
+                default = ReminderType.Evening.defaultValue.toSecondOfDay(),
             ),
             transform = { enabled, morning, evening ->
                 if (!enabled) {
@@ -73,7 +84,7 @@ class ReminderHelper(
             ),
             flow2 = sharedPreferences.observeKey(
                 key = Settings.reminderDjumaTime,
-                default = ReminderType.Djuma.defaultValue,
+                default = ReminderType.Djuma.defaultValue.toSecondOfDay(),
             ),
             transform = { enabled, time ->
                 if (!enabled) {
@@ -89,33 +100,37 @@ class ReminderHelper(
             },
         )
 
-        forceUpdateSharedFlow
-            .onStart { emit(Unit) }
-            .flatMapLatest {
-                combine(
-                    flow = sharedPreferences.observeKey(Settings.reminderEnabledKey, false),
-                    flow2 = dailyFlow,
-                    flow3 = djumaFlow,
-                    transform = { enabled, dailyArray, djumaArray ->
-                        if (!enabled) {
-                            return@combine emptyArray<ReminderData>()
-                        }
+        job?.cancel()
+        job = combine(
+            flow = sharedPreferences.observeKey(Settings.reminderEnabledKey, false),
+            flow2 = dailyFlow,
+            flow3 = djumaFlow,
+            transform = { enabled, dailyArray, djumaArray ->
+                if (!enabled) {
+                    return@combine emptyArray<ReminderData>()
+                }
 
-                        return@combine arrayOf(
-                            *dailyArray,
-                            *djumaArray,
-                        )
-                    })
-            }
-            .onEach { cancelAll() }.flatMapConcat { array -> array.asFlow() }
-            .onEach { item ->
-                val (type, time) = item
+                return@combine arrayOf(
+                    *dailyArray,
+                    *djumaArray,
+                )
+            },
+        )
+            .onEach { cancelAll() }
+            .flatMapConcat { array -> array.asFlow() }
+            .onEach { (type, time) ->
                 val isLastEventToday = reminderDataSource.getLastEventDate(type).isToday()
-                val date = when {
-                    type == ReminderType.Djuma && isLastEventToday -> time.toNextFridayDate()
-                    type == ReminderType.Djuma -> time.toFridayDate()
-//                    isLastEventToday -> time.toTomorrowDate()
-                    else -> time.toTodayDate()
+                val date = when (type.regularity) {
+                    Regularity.Daily -> nextDailyTrigger(
+                        time = time,
+                        isLastEventToday = isLastEventToday,
+                    )
+
+                    is Regularity.Weekly -> nextWeeklyTrigger(
+                        time = time,
+                        day = type.regularity.day,
+                        isLastEventToday = isLastEventToday,
+                    )
                 }
 
                 setAlarm(
@@ -126,10 +141,47 @@ class ReminderHelper(
             .launchIn(coroutineScope)
     }
 
-    fun initAlarms() {
-        Timber.d("initAlarms()")
-        forceUpdateSharedFlow.tryEmit(Unit)
+    private fun nextDailyTrigger(time: LocalTime, isLastEventToday: Boolean): Date {
+        val now = ZonedDateTime.now()
+        val todayTrigger = now.with(time)
+
+        val nextTrigger = when {
+            isLastEventToday -> todayTrigger.plusDays(1)
+            todayTrigger.isAfter(now) -> todayTrigger
+            else -> todayTrigger.plusDays(1)
+        }
+
+        return Date.from(nextTrigger.toInstant())
     }
+
+    private fun nextWeeklyTrigger(
+        time: LocalTime,
+        day: DayOfWeek,
+        isLastEventToday: Boolean
+    ): Date {
+        val now = ZonedDateTime.now()
+        val initialTrigger = now.with(TemporalAdjusters.nextOrSame(day)).with(time)
+
+        val nextTrigger = when {
+            isLastEventToday -> initialTrigger.plusWeeks(1)
+            initialTrigger.isBefore(now) -> initialTrigger.plusWeeks(1)
+            else -> initialTrigger
+        }
+
+        return Date.from(nextTrigger.toInstant())
+    }
+
+    private fun createPendingIntent(reminderType: ReminderType): PendingIntent? =
+        PendingIntentCompat.getBroadcast(
+            application,
+            reminderType.requestCode,
+            ReminderReceiver.createIntent(
+                context = application,
+                reminderType = reminderType,
+            ),
+            PendingIntent.FLAG_UPDATE_CURRENT,
+            false,
+        )
 
     private fun cancelAll() {
         Timber.d("cancelAll()")
@@ -141,19 +193,11 @@ class ReminderHelper(
         }
     }
 
-    private fun createPendingIntent(reminderType: ReminderType): PendingIntent? =
-        PendingIntentCompat.getBroadcast(
-            application,
-            reminderType.id,
-            ReminderReceiver.createIntent(
-                context = application,
-                reminderType = reminderType,
-            ),
-            PendingIntent.FLAG_UPDATE_CURRENT,
-            false,
-        )
-
-    private fun setAlarm(reminderType: ReminderType, date: Date, force: Boolean = false) {
+    private fun setAlarm(
+        reminderType: ReminderType,
+        date: Date,
+        force: Boolean = false,
+    ) {
         Timber.d("setAlarm(), reminderType=$reminderType, date=$date")
         val pendingIntent = createPendingIntent(reminderType) ?: return
 
@@ -162,7 +206,10 @@ class ReminderHelper(
             else true
 
         if (canScheduleExactAlarms) {
-            alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(date.time, null), pendingIntent)
+            alarmManager.setAlarmClock(
+                AlarmManager.AlarmClockInfo(date.time, null),
+                pendingIntent,
+            )
 
             if (force) {
                 reminderDataSource.resetLastEventDate(reminderType)

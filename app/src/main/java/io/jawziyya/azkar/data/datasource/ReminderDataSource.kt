@@ -29,13 +29,16 @@ class ReminderDataSource(
     }
 
     fun getTime(reminderType: ReminderType): LocalTime {
-        val seconds = sharedPreferences.getInt(reminderType.storageKey, reminderType.defaultValue)
+        val seconds = sharedPreferences.getInt(
+            reminderType.storageKey,
+            reminderType.defaultValue.toSecondOfDay(),
+        )
         return LocalTime.ofSecondOfDay(seconds.toLong())
     }
 
     fun getTimeFlow(reminderType: ReminderType): Flow<LocalTime> =
         sharedPreferences
-            .observeKey(reminderType.storageKey, reminderType.defaultValue)
+            .observeKey<Int>(reminderType.storageKey, reminderType.defaultValue.toSecondOfDay())
             .map { value -> LocalTime.ofSecondOfDay(value.toLong()) }
 
     fun setTime(reminderType: ReminderType, time: LocalTime) {

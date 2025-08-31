@@ -122,6 +122,7 @@ class App : Application() {
             }
             viewModel {
                 ReminderSettingsViewModel(
+                    alarmManager = get(),
                     reminderDataSource = get(),
                 )
             }

@@ -22,10 +22,9 @@
 
         <activity
             android:name=".ui.AppActivity"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:configChanges="screenSize|screenLayout|keyboardHidden"
             android:exported="true"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.App"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">

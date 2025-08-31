@@ -2,6 +2,7 @@ package io.jawziyya.azkar.ui.azkarpager
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -129,6 +130,7 @@ fun AzkarPagerScreenView(
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun View(
     azkarCategory: AzkarCategory,
@@ -171,7 +173,8 @@ private fun View(
             }
 
             Box {
-                HorizontalPager(modifier = Modifier.fillMaxSize(),
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
                     state = pagerState,
                     beyondViewportPageCount = 1,
                     key = { index -> azkarList[index].id }) { page ->

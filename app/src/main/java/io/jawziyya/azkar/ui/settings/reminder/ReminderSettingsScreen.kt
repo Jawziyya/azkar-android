@@ -1,13 +1,16 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
+
 package io.jawziyya.azkar.ui.settings.reminder
 
+import android.content.Intent
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,10 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,19 +34,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.commandiron.wheel_picker_compose.WheelTimePicker
 import com.commandiron.wheel_picker_compose.core.WheelPickerDefaults
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import io.jawziyya.azkar.R
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.components.AppBar
 import io.jawziyya.azkar.ui.theme.components.AppSwitch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalTime
@@ -64,6 +75,10 @@ fun ReminderSettingsScreenView(
     val djumaEnabled by viewModel.djumaEnabledFlow.collectAsState(false)
     val djumaTime by viewModel.djumaTimeFlow.collectAsState(LocalTime.ofSecondOfDay(0))
 
+    HandleCommand(
+        launchPermissionSettingsFlow = viewModel.launchPermissionSettingsFlow,
+    )
+
     View(
         onBackClick = { navController.popBackStack() },
         enabled = enabled,
@@ -79,6 +94,26 @@ fun ReminderSettingsScreenView(
         djumaTime = djumaTime,
         onDjumaTimeChange = viewModel::onDjumaTimeChange,
     )
+}
+
+@Composable
+private fun HandleCommand(launchPermissionSettingsFlow: Flow<Unit>) {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            launchPermissionSettingsFlow
+                .onEach {
+                    context.startActivity(
+                        Intent().apply {
+                            action = android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                            data = "package:${context.packageName}".toUri()
+                        }
+                    )
+                }
+                .collect()
+        }
+    }
 }
 
 @Composable
@@ -106,37 +141,32 @@ private fun View(
             title = stringResource(R.string.settings_type_reminder),
             onBackClick = onBackClick,
         )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            AppSwitch(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-                    .padding(horizontal = 16.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(AppTheme.colors.contentBackground),
-                padding = PaddingValues(all = 8.dp),
-                text = "Включить напомнинания",
-                checked = enabled,
-                onCheckedChange = onEnabledChange,
-            )
+            ListItem {
+                AppSwitch(
+                    modifier = Modifier.fillMaxWidth(),
+                    padding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    text = "Уведомления",
+                    checked = enabled,
+                    onCheckedChange = onEnabledChange,
+                )
+            }
 
-            AnimatedVisibility(enabled, enter = fadeIn(), exit = fadeOut()) {
-                Column {
-                    Column(
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(AppTheme.colors.contentBackground),
-                    ) {
+            AnimatedVisibility(enabled) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    ListItem {
                         AppSwitch(
                             modifier = Modifier.fillMaxWidth(),
-                            padding = PaddingValues(all = 8.dp),
+                            padding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             text = "Напоминать об утренних и вечерних азкарах",
                             checked = dailyEnabled,
                             onCheckedChange = onDailyEnabledChange,
@@ -144,15 +174,19 @@ private fun View(
                         AnimatedVisibility(dailyEnabled) {
                             Column(
                                 modifier = Modifier.padding(bottom = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
+                                Divider(Modifier.padding(horizontal = 16.dp))
+
                                 TimeItem(
-                                    modifier = Modifier,
                                     text = "Утренние",
                                     time = morningTime,
                                     onTimeChange = onMorningTimeChange,
                                 )
+
+                                Divider(Modifier.padding(horizontal = 16.dp))
+
                                 TimeItem(
-                                    modifier = Modifier.padding(top = 8.dp),
                                     text = "Вечерние",
                                     time = eveningTime,
                                     onTimeChange = onEveningTimeChange,
@@ -161,33 +195,47 @@ private fun View(
                         }
                     }
 
-                    Column(
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(AppTheme.colors.contentBackground),
-                    ) {
+                    ListItem {
                         AppSwitch(
                             modifier = Modifier.fillMaxWidth(),
-                            padding = PaddingValues(all = 8.dp),
+                            padding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             text = "Напоминать о дуа в день джума",
                             checked = djumaEnabled,
                             onCheckedChange = onDjumaEnabledChange,
                         )
                         AnimatedVisibility(djumaEnabled) {
-                            TimeItem(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                text = "Время",
-                                time = djumaTime,
-                                onTimeChange = onDjumaTimeChange,
-                            )
+                            Column(
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Divider(Modifier.padding(horizontal = 16.dp))
+
+                                TimeItem(
+                                    text = "Время",
+                                    time = djumaTime,
+                                    onTimeChange = onDjumaTimeChange,
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ListItem(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(AppTheme.colors.contentBackground),
+    ) {
+        content()
     }
 }
 
@@ -205,7 +253,7 @@ private fun TimeItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 0.dp, horizontal = 8.dp),
+            .padding(vertical = 0.dp, horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

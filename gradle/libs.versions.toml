@@ -1,6 +1,6 @@
 [versions]
-androidApplication = "8.4.1"
-kotlin = "2.0.0"
+androidApplication = "8.9.1"
+kotlin = "2.1.20"
 accompanistFlowlayout = "0.32.0"
 activityCompose = "1.9.0"
 appcompat = "1.6.1"
@@ -19,14 +19,14 @@ lifecycleRuntimeKtx = "2.8.0"
 lifecycleViewmodelCompose = "2.8.1"
 lottieCompose = "5.2.0"
 material = "1.6.7"
-navigationCompose = "2.8.0-beta01"
+navigationCompose = "2.9.3"
 runtimeLivedata = "1.6.7"
 timber = "5.0.1"
 uiTooling = "1.6.7"
 uiToolingPreview = "1.6.7"
 serialization = "1.6.3"
 koinAndroidxCompose = '3.6.0-wasm-alpha2'
-materialNavigationCompose = "1.7.0-beta01"
+materialNavigationCompose = "1.9.0"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }

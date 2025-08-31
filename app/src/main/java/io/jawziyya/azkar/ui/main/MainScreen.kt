@@ -2,7 +2,11 @@ package io.jawziyya.azkar.ui.main
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,7 +67,10 @@ import kotlin.random.Random
 data object MainScreen
 
 @Composable
-fun MainScreenView(navController: NavHostController, navBackStackEntry: NavBackStackEntry) {
+fun MainScreenView(
+    navController: NavHostController,
+    navBackStackEntry: NavBackStackEntry,
+) {
     val viewModel: MainViewModel = koinViewModel()
     val fadail by viewModel.fadailFlow.collectAsState(null)
 
@@ -188,6 +195,7 @@ private fun View(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DayAzkarSection(
     modifier: Modifier = Modifier,

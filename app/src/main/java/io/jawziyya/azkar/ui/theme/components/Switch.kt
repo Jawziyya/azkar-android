@@ -41,6 +41,7 @@ fun AppSwitch(
             onCheckedChange = remember { { onCheckedChange() } },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = AppTheme.colors.alternativeAccent,
+                uncheckedThumbColor = AppTheme.colors.progressBackground,
             )
         )
     }

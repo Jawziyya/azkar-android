@@ -1,20 +1,16 @@
 package io.jawziyya.azkar.ui
 
 import android.Manifest
-import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -75,25 +71,6 @@ class AppActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1000)
-        }
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            requestPermissions(arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), 1000)
-//        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
-//            if (alarmManager?.canScheduleExactAlarms() == false) {
-//                Intent().also { intent ->
-//                    intent.action = android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-//                    startActivity(intent)
-//                }
-//            }
-
-            if (alarmManager?.canScheduleExactAlarms() == false) {
-                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                intent.setData(Uri.fromParts("package", packageName, null))
-                startActivity(intent)
-            }
         }
     }
 

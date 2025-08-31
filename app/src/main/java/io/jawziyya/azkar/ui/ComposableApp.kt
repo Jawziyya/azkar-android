@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.core.graphics.drawable.toDrawable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -60,8 +61,8 @@ fun ComposableApp() {
     val darkTheme by darkThemeFlow.collectAsState(systemDarkTheme)
 
     LaunchedEffect(darkTheme) {
-        val drawable = ColorDrawable(if (darkTheme) Color.BLACK else Color.WHITE)
-        window?.setBackgroundDrawable(drawable)
+        val color = if (darkTheme) Color.BLACK else Color.WHITE
+        window?.setBackgroundDrawable(color.toDrawable())
     }
 
     AppTheme(darkTheme = darkTheme) {
