@@ -12,6 +12,7 @@ import io.jawziyya.azkar.data.datasource.ReminderDataSource
 import io.jawziyya.azkar.data.helper.ReminderHelper
 import io.jawziyya.azkar.data.repository.AzkarCounterRepository
 import io.jawziyya.azkar.data.repository.FileRepository
+import io.jawziyya.azkar.data.repository.MoonPhaseRepository
 import io.jawziyya.azkar.database.DatabaseHelper
 import io.jawziyya.azkar.ui.azkarlist.AzkarListViewModel
 import io.jawziyya.azkar.ui.azkarpager.AzkarPagerViewModel
@@ -62,6 +63,11 @@ class App : Application() {
                 )
             }
             single<AzkarCounterRepository> { AzkarCounterRepository() }
+            single<MoonPhaseRepository> {
+                MoonPhaseRepository(
+                    coroutineScope = GlobalScope,
+                )
+            }
             single<ReminderDataSource> {
                 ReminderDataSource(
                     sharedPreferences = get(),
@@ -79,7 +85,12 @@ class App : Application() {
                     sharedPreferences = get(),
                 )
             }
-            viewModel { MainViewModel(databaseHelper = get()) }
+            viewModel {
+                MainViewModel(
+                    databaseHelper = get(),
+                    moonPhaseRepository = get(),
+                )
+            }
             viewModel { params ->
                 AzkarListViewModel(
                     azkarCategory = params.get(),

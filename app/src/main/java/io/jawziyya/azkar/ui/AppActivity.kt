@@ -17,6 +17,7 @@ import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import io.jawziyya.azkar.data.repository.AzkarCounterRepository
+import io.jawziyya.azkar.data.repository.MoonPhaseRepository
 import org.koin.android.ext.android.inject
 
 
@@ -27,6 +28,7 @@ class AppActivity : AppCompatActivity() {
     }
 
     private val azkarCounterRepository: AzkarCounterRepository by inject()
+    private val moonPhaseRepository: MoonPhaseRepository by inject()
     private val appUpdateLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { _ -> }
 
@@ -50,6 +52,7 @@ class AppActivity : AppCompatActivity() {
         )
 
         lifecycle.addObserver(azkarCounterRepository)
+        lifecycle.addObserver(moonPhaseRepository)
 
         setContent {
             ComposableApp()

@@ -1,16 +1,13 @@
 package io.jawziyya.azkar.ui.main
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.RawRes
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -42,11 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import io.jawziyya.azkar.R
+import io.jawziyya.azkar.data.helper.MoonPhase
 import io.jawziyya.azkar.database.model.AzkarCategory
 import io.jawziyya.azkar.database.model.Fadail
 import io.jawziyya.azkar.ui.azkarlist.AzkarListScreen
@@ -54,7 +49,6 @@ import io.jawziyya.azkar.ui.azkarpager.AzkarPagerScreen
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.settings.SettingsScreen
 import io.jawziyya.azkar.ui.theme.AppTheme
-import io.jawziyya.azkar.ui.theme.LocalDarkTheme
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
@@ -72,9 +66,11 @@ fun MainScreenView(
     navBackStackEntry: NavBackStackEntry,
 ) {
     val viewModel: MainViewModel = koinViewModel()
+    val moonPhase by viewModel.moonPhase.collectAsState()
     val fadail by viewModel.fadailFlow.collectAsState(null)
 
     View(
+        moonPhase = moonPhase,
         fadail = fadail,
         onAzkarCategoryClick = { category ->
             if (category.main) {
@@ -93,6 +89,7 @@ fun MainScreenView(
 
 @Composable
 private fun View(
+    moonPhase: MoonPhase,
     fadail: Fadail?,
     onAzkarCategoryClick: (AzkarCategory) -> Unit,
     onSettingsClick: () -> Unit,
@@ -128,6 +125,7 @@ private fun View(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                moonPhase = moonPhase,
                 onAzkarCategoryClick = onAzkarCategoryClick,
             )
             Column(
@@ -139,7 +137,7 @@ private fun View(
             ) {
                 ListItem(
                     modifier = Modifier.fillMaxWidth(),
-                    imageRes = R.drawable.ic_bed_32,
+                    imageRes = R.drawable.ic_category_night,
                     title = stringResource(R.string.azkar_category_night),
                     onClick = remember {
                         { onAzkarCategoryClick(AzkarCategory.Night) }
@@ -147,7 +145,7 @@ private fun View(
                 )
                 ListItem(
                     modifier = Modifier.fillMaxWidth(),
-                    imageRes = R.drawable.ic_mosque_32,
+                    imageRes = R.drawable.ic_category_after_salah,
                     title = stringResource(R.string.azkar_category_after_salah),
                     onClick = remember {
                         { onAzkarCategoryClick(AzkarCategory.AfterSalah) }
@@ -155,7 +153,7 @@ private fun View(
                 )
                 ListItem(
                     modifier = Modifier.fillMaxWidth(),
-                    imageRes = R.drawable.ic_round_layers_32,
+                    imageRes = R.drawable.ic_category_important,
                     title = stringResource(R.string.azkar_category_other),
                     onClick = remember {
                         { onAzkarCategoryClick(AzkarCategory.Other) }
@@ -195,10 +193,10 @@ private fun View(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DayAzkarSection(
     modifier: Modifier = Modifier,
+    moonPhase: MoonPhase,
     onAzkarCategoryClick: (AzkarCategory) -> Unit,
 ) {
     Row(
@@ -206,20 +204,39 @@ private fun DayAzkarSection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        DayAzkarItem(
+        DayAzkarContainer(
             modifier = Modifier.weight(1f),
-            lottieRes = R.raw.sun,
-            animationSpeed = .3f,
             title = stringResource(R.string.azkar_category_morning),
+            imageContent = {
+                Image(
+                    modifier = Modifier.size(50.dp),
+                    painter = painterResource(R.drawable.ic_category_morning),
+                    contentDescription = null,
+                )
+            },
             onClick = remember {
                 { onAzkarCategoryClick(AzkarCategory.Morning) }
             },
         )
-        DayAzkarItem(
+        DayAzkarContainer(
             modifier = Modifier.weight(1f),
-            lottieRes = if (LocalDarkTheme.current) R.raw.moon else R.raw.moon2,
-            animationSpeed = .2f,
             title = stringResource(R.string.azkar_category_evening),
+            imageContent = {
+                Crossfade(moonPhase) { value ->
+                    Image(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .alpha(.5f),
+                        painter = painterResource(R.drawable.ic_moonphase_new_moon),
+                        contentDescription = null,
+                    )
+                    Image(
+                        modifier = Modifier.size(50.dp),
+                        painter = painterResource(value.drawableRes),
+                        contentDescription = null,
+                    )
+                }
+            },
             onClick = remember {
                 { onAzkarCategoryClick(AzkarCategory.Evening) }
             },
@@ -228,15 +245,12 @@ private fun DayAzkarSection(
 }
 
 @Composable
-private fun DayAzkarItem(
+private fun DayAzkarContainer(
     modifier: Modifier = Modifier,
-    @RawRes lottieRes: Int,
-    animationSpeed: Float,
     title: String,
+    imageContent: @Composable BoxScope.() -> Unit,
     onClick: () -> Unit,
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(lottieRes))
-
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
@@ -244,14 +258,14 @@ private fun DayAzkarItem(
             .rippleClickable(onClick)
             .padding(8.dp)
     ) {
-        LottieAnimation(
+        Box(
             modifier = Modifier
                 .size(80.dp)
                 .align(Alignment.CenterHorizontally),
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            speed = animationSpeed,
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            imageContent()
+        }
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -280,6 +294,7 @@ private fun ListItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
+            modifier = Modifier.size(32.dp),
             painter = painterResource(imageRes),
             contentDescription = null,
             colorFilter = colorFilter,
@@ -341,6 +356,7 @@ private fun FudulSection(
 @Composable
 private fun MainScreenPreview() {
     View(
+        moonPhase = MoonPhase.WaningGibbous,
         fadail = null,
         onAzkarCategoryClick = {},
         onSettingsClick = {},

@@ -119,7 +119,7 @@ internal val LocalTypography = staticCompositionLocalOf {
         subtitle = TextStyle(
             letterSpacing = 0.sp,
             fontFamily = googleSansFamily,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
         ),
         sectionHeader = TextStyle(
