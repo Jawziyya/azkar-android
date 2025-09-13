@@ -49,6 +49,7 @@ import io.jawziyya.azkar.ui.azkarpager.AzkarPagerScreen
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.settings.SettingsScreen
 import io.jawziyya.azkar.ui.theme.AppTheme
+import io.jawziyya.azkar.ui.theme.LocalDarkTheme
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
@@ -204,13 +205,18 @@ private fun DayAzkarSection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+
         DayAzkarContainer(
             modifier = Modifier.weight(1f),
             title = stringResource(R.string.azkar_category_morning),
             imageContent = {
+                val iconRes =
+                    if (LocalDarkTheme.current) R.drawable.ic_category_morning_dark
+                    else R.drawable.ic_category_morning
+
                 Image(
                     modifier = Modifier.size(50.dp),
-                    painter = painterResource(R.drawable.ic_category_morning),
+                    painter = painterResource(iconRes),
                     contentDescription = null,
                 )
             },
