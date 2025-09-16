@@ -54,6 +54,14 @@ enum class AzkarCategory(
         titleRes = R.string.azkar_category_other,
         main = false,
         counter = false,
+    ),
+
+    @SerialName("hundred-dua")
+    HundredDua(
+        value = "hundred-dua",
+        titleRes = R.string.azkar_category_hundred_dua,
+        main = false,
+        counter = false,
     );
 
     companion object {

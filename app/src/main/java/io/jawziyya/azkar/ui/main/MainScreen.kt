@@ -160,6 +160,14 @@ private fun View(
                         { onAzkarCategoryClick(AzkarCategory.Other) }
                     },
                 )
+                ListItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    imageRes = R.drawable.ic_category_100_dua,
+                    title = stringResource(R.string.azkar_category_hundred_dua),
+                    onClick = remember {
+                        { onAzkarCategoryClick(AzkarCategory.HundredDua) }
+                    },
+                )
             }
 
             Column(

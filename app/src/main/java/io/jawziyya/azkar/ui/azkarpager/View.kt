@@ -2,7 +2,6 @@ package io.jawziyya.azkar.ui.azkarpager
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -131,7 +130,6 @@ fun AzkarPagerScreenView(
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun View(
     azkarCategory: AzkarCategory,
@@ -309,15 +307,18 @@ private fun Content(
             textAlign = TextAlign.Start,
             color = AppTheme.colors.text,
         )
-        Player(
-            modifier = Modifier.padding(top = 16.dp),
-            zikr = azkar,
-            playerState = playerState,
-            onReplay = onReplay,
-            onPlayClick = onPlayClick,
-            onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
-            audioPlaybackSpeed = audioPlaybackSpeed,
-        )
+
+        if (azkar.audioName != null) {
+            Player(
+                modifier = Modifier.padding(top = 16.dp),
+                zikr = azkar,
+                playerState = playerState,
+                onReplay = onReplay,
+                onPlayClick = onPlayClick,
+                onAudioPlaybackSpeedChange = onAudioPlaybackSpeedChange,
+                audioPlaybackSpeed = audioPlaybackSpeed,
+            )
+        }
 
         if (!azkar.translation.isNullOrBlank()) {
             TitleTextSection(
@@ -368,37 +369,36 @@ private fun Content(
                 )
             }
 
-            val (clickableModifier, textDecoration) = if (azkar.hadith == null) Pair(
-                Modifier,
-                TextDecoration.None,
-            )
-            else Pair(
-                Modifier.noRippleClickable { onHadithClick(azkar.hadith) },
-                TextDecoration.Underline,
-            )
-
-            Column(
-                modifier = Modifier.then(clickableModifier)
-            ) {
-                Text(
-                    modifier = Modifier,
-                    text = "Источник".uppercase(),
-                    style = AppTheme.typography.sectionHeader,
-                    textAlign = TextAlign.Start,
-                    color = AppTheme.colors.tertiaryText,
+            val source = azkar.source.firstOrNull()
+            if (source != null) {
+                val (clickableModifier, textDecoration) = if (azkar.hadith == null) Pair(
+                    Modifier,
+                    TextDecoration.None,
                 )
-                val sourceRes = azkar.source.firstOrNull()?.titleRes
-                val sourceText = if (sourceRes != null) stringResource(sourceRes).uppercase()
-                else ""
-
-                Text(
-                    modifier = Modifier,
-                    text = sourceText,
-                    style = AppTheme.typography.tip,
-                    textAlign = TextAlign.Start,
-                    color = AppTheme.colors.text,
-                    textDecoration = textDecoration,
+                else Pair(
+                    Modifier.noRippleClickable { onHadithClick(azkar.hadith) },
+                    TextDecoration.Underline,
                 )
+
+                Column(
+                    modifier = Modifier.then(clickableModifier)
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = "Источник".uppercase(),
+                        style = AppTheme.typography.sectionHeader,
+                        textAlign = TextAlign.Start,
+                        color = AppTheme.colors.tertiaryText,
+                    )
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(source.titleRes).uppercase(),
+                        style = AppTheme.typography.tip,
+                        textAlign = TextAlign.Start,
+                        color = AppTheme.colors.text,
+                        textDecoration = textDecoration,
+                    )
+                }
             }
         }
 

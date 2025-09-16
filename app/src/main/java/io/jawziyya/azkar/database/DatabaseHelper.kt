@@ -26,7 +26,7 @@ class DatabaseHelper(
     context: Context,
     private val resources: Resources,
     private val sharedPreferences: SharedPreferences,
-) : SQLiteAssetHelper(context, "azkar.db", null, 2) {
+) : SQLiteAssetHelper(context, "azkar.db", null, 3) {
 
     private val database: SQLiteDatabase by lazy { readableDatabase }
 
@@ -129,15 +129,15 @@ class DatabaseHelper(
             select $columns
             from azkar 
             inner join `azkar+azkar_group` on azkar.id=`azkar+azkar_group`.azkar_id
-            inner join audios on azkar.audio_id=audios.id
-            inner join azkar_$language on azkar.id=azkar_$language.id
+            left join audios on azkar.audio_id=audios.id
+            left join azkar_$language on azkar.id=azkar_$language.id
             where `azkar+azkar_group`.`group`=?
             order by `azkar+azkar_group`.`order` asc
             """.trimIndent(),
             arguments = arrayOf(category.value),
             mapper = { cursor ->
-                val order = cursor.getInt(cursor.getColumnIndexOrThrow("order"))
-                val fallbackTitle = "${resources.getString(R.string.dhikr_fallback_name)}${order}"
+                val position = cursor.position + 1
+                val fallbackTitle = "${resources.getString(R.string.dhikr_fallback_name)}$position"
                 val categoryValue = cursor.getString(cursor.getColumnIndexOrThrow("category"))
                 val benefits = cursor.getStringOrNull(cursor.getColumnIndex("benefits"))
                     ?.takeIf { it.isNotBlank() }
@@ -158,7 +158,7 @@ class DatabaseHelper(
                     notes = cursor.getStringOrNull(cursor.getColumnIndexOrThrow("notes")),
                     hadith = cursor.getLongOrNull(cursor.getColumnIndexOrThrow("hadith")),
                     audioName = cursor.getStringOrNull(cursor.getColumnIndexOrThrow("audioName")),
-                    order = order,
+                    order = cursor.getInt(cursor.getColumnIndexOrThrow("order")),
                 )
             },
         )
