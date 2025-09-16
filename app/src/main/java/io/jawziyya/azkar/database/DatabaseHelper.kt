@@ -26,7 +26,7 @@ class DatabaseHelper(
     context: Context,
     private val resources: Resources,
     private val sharedPreferences: SharedPreferences,
-) : SQLiteAssetHelper(context, "azkar.db", null, 3) {
+) : SQLiteAssetHelper(context, "azkar.db", null, 4) {
 
     private val database: SQLiteDatabase by lazy { readableDatabase }
 
