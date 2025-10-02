@@ -147,7 +147,7 @@ private fun Content(
     onItemClick: (SettingsType) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(rememberScrollState())
             .navigationBarsPadding()
     ) {

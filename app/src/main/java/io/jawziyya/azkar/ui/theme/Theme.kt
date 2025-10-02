@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.jawziyya.azkar.ui.settings.ArabicFontOption
 import io.jawziyya.azkar.ui.settings.TranslationFontOption
-import timber.log.Timber
 
 @Immutable
 data class Typography(
