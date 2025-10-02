@@ -2,7 +2,6 @@ package io.jawziyya.azkar.ui
 
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,11 +31,13 @@ import io.jawziyya.azkar.ui.hadith.HadithScreen
 import io.jawziyya.azkar.ui.hadith.HadithScreenView
 import io.jawziyya.azkar.ui.main.MainScreen
 import io.jawziyya.azkar.ui.main.MainScreenView
+import io.jawziyya.azkar.ui.settings.ArabicFontOption
 import io.jawziyya.azkar.ui.settings.DarkThemeOption
 import io.jawziyya.azkar.ui.settings.SettingsDetailScreen
 import io.jawziyya.azkar.ui.settings.SettingsDetailScreenView
 import io.jawziyya.azkar.ui.settings.SettingsScreen
 import io.jawziyya.azkar.ui.settings.SettingsScreenView
+import io.jawziyya.azkar.ui.settings.TranslationFontOption
 import io.jawziyya.azkar.ui.settings.reminder.ReminderSettingsScreen
 import io.jawziyya.azkar.ui.settings.reminder.ReminderSettingsScreenView
 import io.jawziyya.azkar.ui.theme.AppTheme
@@ -49,8 +50,10 @@ fun ComposableApp() {
     val sharedPreferences: SharedPreferences = koinInject()
     val systemDarkTheme = isSystemInDarkTheme()
     val darkThemeFlow = remember(systemDarkTheme) {
-        sharedPreferences.observeKey(Settings.darkThemeKey, DarkThemeOption.SYSTEM.name)
-            .map { name -> DarkThemeOption.valueOf(name) }.map { selectedOption ->
+        sharedPreferences
+            .observeKey(Settings.darkThemeKey, DarkThemeOption.SYSTEM.name)
+            .map { name -> DarkThemeOption.valueOf(name) }
+            .map { selectedOption ->
                 return@map when (selectedOption) {
                     DarkThemeOption.DISABLED -> false
                     DarkThemeOption.ENABLED -> true
@@ -60,12 +63,30 @@ fun ComposableApp() {
     }
     val darkTheme by darkThemeFlow.collectAsState(systemDarkTheme)
 
+    val translationFontOptionFlow = remember {
+        sharedPreferences
+            .observeKey(Settings.translationFontKey, TranslationFontOption.fallback.name)
+            .map { name -> TranslationFontOption.valueOf(name) }
+    }
+    val translationFontOption by translationFontOptionFlow.collectAsState(TranslationFontOption.fallback)
+
+    val arabicFontOptionFlow = remember {
+        sharedPreferences
+            .observeKey(Settings.arabicFontKey, ArabicFontOption.fallback.name)
+            .map { name -> ArabicFontOption.valueOf(name) }
+    }
+    val arabicFontOption by arabicFontOptionFlow.collectAsState(ArabicFontOption.fallback)
+
     LaunchedEffect(darkTheme) {
         val color = if (darkTheme) Color.BLACK else Color.WHITE
         window?.setBackgroundDrawable(color.toDrawable())
     }
 
-    AppTheme(darkTheme = darkTheme) {
+    AppTheme(
+        darkTheme = darkTheme,
+        translationFontOption = translationFontOption,
+        arabicFontOption = arabicFontOption,
+    ) {
         val sheetState = rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
             skipHalfExpanded = true,

@@ -52,6 +52,8 @@
     <string name="settings_type_dark_theme">Dark theme</string>
     <string name="settings_type_language">Translation</string>
     <string name="settings_type_reminder">Reminder</string>
+    <string name="settings_type_font_arabic">Arabic font</string>
+    <string name="settings_type_font_translation">Translation font</string>
 
     <!--  Theme settings  -->
     <string name="theme_settings_option_disabled">Off</string>

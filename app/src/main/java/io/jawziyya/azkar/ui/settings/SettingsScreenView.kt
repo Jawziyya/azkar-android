@@ -54,11 +54,11 @@ fun SettingsScreenView(
         onBackClick = navController::popBackStack,
         onItemClick = { type ->
             when (type) {
-                SettingsType.DARK_THEME -> {
+                SettingsType.DarkTheme -> {
                     navController.navigate(
                         SettingsDetailScreen(
                             sharedPreferencesKey = Settings.darkThemeKey,
-                            title = resources.getString(R.string.settings_type_dark_theme),
+                            title = resources.getString(type.title),
                             titles = DarkThemeOption.entries.map { value ->
                                 resources.getString(value.title)
                             },
@@ -68,11 +68,11 @@ fun SettingsScreenView(
                     )
                 }
 
-                SettingsType.LANGUAGE -> {
+                SettingsType.Language -> {
                     navController.navigate(
                         SettingsDetailScreen(
                             sharedPreferencesKey = Settings.languageKey,
-                            title = resources.getString(R.string.settings_type_language),
+                            title = resources.getString(type.title),
                             titles = LanguageOption.entries.map { value ->
                                 resources.getString(value.title)
                             },
@@ -82,9 +82,29 @@ fun SettingsScreenView(
                     )
                 }
 
-                SettingsType.REMINDER -> {
+                SettingsType.Reminder -> {
                     navController.navigate(ReminderSettingsScreen)
                 }
+
+                SettingsType.ArabicFont -> navController.navigate(
+                    SettingsDetailScreen(
+                        sharedPreferencesKey = Settings.arabicFontKey,
+                        title = resources.getString(type.title),
+                        titles = ArabicFontOption.entries.map { value -> value.title },
+                        values = ArabicFontOption.entries.map { value -> value.name },
+                        defaultValueIndex = ArabicFontOption.fallback.ordinal,
+                    ),
+                )
+
+                SettingsType.TranslationFont -> navController.navigate(
+                    SettingsDetailScreen(
+                        sharedPreferencesKey = Settings.translationFontKey,
+                        title = resources.getString(type.title),
+                        titles = TranslationFontOption.entries.map { value -> value.title },
+                        values = TranslationFontOption.entries.map { value -> value.name },
+                        defaultValueIndex = TranslationFontOption.fallback.ordinal,
+                    ),
+                )
             }
         },
     )

@@ -5,17 +5,21 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import io.jawziyya.azkar.ui.settings.ArabicFontOption
+import io.jawziyya.azkar.ui.settings.TranslationFontOption
+import timber.log.Timber
 
 @Immutable
 data class Typography(
@@ -26,17 +30,18 @@ data class Typography(
     val sectionHeader: TextStyle,
     val tip: TextStyle,
     val arabic: TextStyle,
+    val translation: TextStyle,
     val digits: TextStyle,
 )
 
 @Composable
 fun AppTheme(
     darkTheme: Boolean,
+    translationFontOption: TranslationFontOption,
+    arabicFontOption: ArabicFontOption,
     content: @Composable () -> Unit,
 ) {
     val colors = if (darkTheme) darkColors() else defaultColors()
-    val typography = AppTheme.typography
-
     val rememberedColors = remember(darkTheme) { colors.copy() }
         .apply { updateColorsFrom(colors) }
     val selectionColors = rememberTextSelectionColors(rememberedColors)
@@ -44,13 +49,21 @@ fun AppTheme(
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !darkTheme
 
-    DisposableEffect(systemUiController, useDarkIcons) {
+    LaunchedEffect(systemUiController, useDarkIcons) {
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
             darkIcons = useDarkIcons,
         )
+    }
 
-        return@DisposableEffect onDispose {}
+    val typography = remember(
+        translationFontOption,
+        arabicFontOption,
+    ) {
+        provideTypography(
+            translationFontFamily = translationFontOption.fontFamily,
+            arabicFontFamily = arabicFontOption.fontFamily,
+        )
     }
 
     CompositionLocalProvider(
@@ -76,27 +89,11 @@ private fun rememberTextSelectionColors(colors: Colors): TextSelectionColors {
     }
 }
 
-object AppTheme {
-    val colors: Colors
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalColors.current
-    val typography: Typography
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalTypography.current
-    val darkTheme: Boolean
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalDarkTheme.current
-}
-
-internal val LocalDarkTheme = staticCompositionLocalOf { false }
-
-internal val LocalColors = staticCompositionLocalOf { defaultColors() }
-
-internal val LocalTypography = staticCompositionLocalOf {
-    Typography(
+private fun provideTypography(
+    translationFontFamily: FontFamily,
+    arabicFontFamily: FontFamily,
+): Typography {
+    return Typography(
         header = TextStyle(
             letterSpacing = 0.sp,
             fontFamily = googleSansFamily,
@@ -136,10 +133,17 @@ internal val LocalTypography = staticCompositionLocalOf {
         ),
         arabic = TextStyle(
             letterSpacing = 0.sp,
-            fontFamily = notoNaskhArabicFamily,
+            fontFamily = arabicFontFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 30.sp,
             textDirection = TextDirection.Rtl,
+        ),
+        translation = TextStyle(
+            letterSpacing = 0.sp,
+            fontFamily = translationFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 18.sp,
+            lineHeight = 24.sp,
         ),
         digits = TextStyle(
             letterSpacing = 0.sp,
@@ -148,5 +152,31 @@ internal val LocalTypography = staticCompositionLocalOf {
             fontWeight = FontWeight.Light,
             fontFeatureSettings = "tnum",
         ),
+    )
+}
+
+object AppTheme {
+    val colors: Colors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalColors.current
+    val typography: Typography
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalTypography.current
+    val darkTheme: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalDarkTheme.current
+}
+
+internal val LocalDarkTheme = staticCompositionLocalOf { false }
+
+internal val LocalColors = staticCompositionLocalOf { defaultColors() }
+
+internal val LocalTypography = staticCompositionLocalOf {
+    provideTypography(
+        translationFontFamily = googleSansFamily,
+        arabicFontFamily = marheyArabicFamily,
     )
 }

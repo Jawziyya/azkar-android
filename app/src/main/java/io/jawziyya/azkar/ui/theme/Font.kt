@@ -18,3 +18,15 @@ val googleSansFamily = FontFamily(
 val notoNaskhArabicFamily = FontFamily(
     Font(R.font.noto_naskh_arabic_ui_regular, FontWeight.Normal),
 )
+
+val adobeArabicFamily = FontFamily(
+    Font(R.font.adobe_arabic_regular, FontWeight.Normal),
+)
+
+val marheyArabicFamily = FontFamily(
+    Font(R.font.marhey_regular, FontWeight.Normal),
+)
+
+val KFGQPCArabicFamily = FontFamily(
+    Font(R.font.kfgqpc_uthmanic_script_hafs, FontWeight.Normal),
+)

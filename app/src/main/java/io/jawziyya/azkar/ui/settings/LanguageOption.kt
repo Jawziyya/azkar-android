@@ -51,7 +51,7 @@ enum class LanguageOption(
     );
 
     companion object {
-        val mainArray: Array<LanguageOption> = values().filter { enum -> enum.main }.toTypedArray()
+        val mainArray: Array<LanguageOption> = entries.filter { enum -> enum.main }.toTypedArray()
 
         fun getFallback(): LanguageOption = Locale.getDefault().language
             .let { language -> mainArray.find { enum -> enum.value == language } }

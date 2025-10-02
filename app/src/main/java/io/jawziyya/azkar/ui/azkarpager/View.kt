@@ -609,7 +609,7 @@ private fun TitleTextSection(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 text = text,
-                style = AppTheme.typography.body,
+                style = AppTheme.typography.translation,
                 textAlign = TextAlign.Start,
                 color = AppTheme.colors.text,
             )

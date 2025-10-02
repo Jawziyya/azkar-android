@@ -9,6 +9,8 @@ object Settings {
     const val transliterationVisibleKey = "SETTINGS_TRANSLITERATION_VISIBLE"
     const val darkThemeKey = "SETTINGS_DARK_THEME"
     const val languageKey = "SETTINGS_LANGUAGE"
+    const val arabicFontKey = "SETTINGS_ARABIC_FONT"
+    const val translationFontKey = "SETTINGS_TRANSLATION_FONT"
     const val reminderEnabledKey = "REMINDER_ENABLED"
     const val reminderDailyEnabled = "REMINDER_DAILY_ENABLED"
     const val reminderMorningTime = "REMINDER_MORNING_TIME"

@@ -96,10 +96,10 @@ private fun Content(hadith: Hadith) {
                 .fillMaxWidth()
                 .padding(16.dp),
             markdown = text,
-            style = AppTheme.typography.arabic,
-            fontSize = 24.sp,
-            textAlign = TextAlign.Start,
-            color = AppTheme.colors.text,
+            style = AppTheme.typography.arabic.copy(
+                color = AppTheme.colors.text,
+                textAlign = TextAlign.Start,
+            ),
         )
 
         if (hadith.translation != null) {
@@ -108,9 +108,10 @@ private fun Content(hadith: Hadith) {
                     .fillMaxWidth()
                     .padding(16.dp),
                 markdown = hadith.translation,
-                style = AppTheme.typography.body,
-                textAlign = TextAlign.Start,
-                color = AppTheme.colors.text,
+                style = AppTheme.typography.translation.copy(
+                    color = AppTheme.colors.text,
+                    textAlign = TextAlign.Start,
+                ),
             )
         }
 

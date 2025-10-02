@@ -52,6 +52,8 @@
     <string name="settings_type_dark_theme">Тёмная тема</string>
     <string name="settings_type_language">Язык перевода</string>
     <string name="settings_type_reminder">Напоминания</string>
+    <string name="settings_type_font_arabic">Шрифт арабского текста</string>
+    <string name="settings_type_font_translation">Шрифт перевода</string>
 
     <!--  Theme settings  -->
     <string name="theme_settings_option_disabled">Выкл</string>

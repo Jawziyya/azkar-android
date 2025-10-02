@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val resources: Resources,
-    private val application: Application,
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
 
@@ -30,47 +29,39 @@ class SettingsViewModel(
                     .map { value ->
                         val option = DarkThemeOption.valueOf(value)
                         val title = resources.getString(option.title)
-                        return@map SettingsType.DARK_THEME to title
+                        return@map SettingsType.DarkTheme to title
                     },
                 sharedPreferences
                     .observeKey(Settings.languageKey, LanguageOption.getFallback().name)
                     .map { value ->
                         val option = LanguageOption.valueOf(value)
                         val title = resources.getString(option.title)
-                        return@map SettingsType.LANGUAGE to title
+                        return@map SettingsType.Language to title
                     },
-                flowOf(SettingsType.REMINDER to ""),
-                transform = { (theme, language, reminder) -> listOf(theme, language, reminder) },
+                sharedPreferences
+                    .observeKey(Settings.arabicFontKey, ArabicFontOption.fallback.name)
+                    .map { value ->
+                        val option = ArabicFontOption.valueOf(value)
+                        return@map SettingsType.ArabicFont to option.title
+                    },
+                sharedPreferences
+                    .observeKey(Settings.translationFontKey, TranslationFontOption.fallback.name)
+                    .map { value ->
+                        val option = TranslationFontOption.valueOf(value)
+                        return@map SettingsType.TranslationFont to option.title
+                    },
+                flowOf(SettingsType.Reminder to ""),
+                transform = { (theme, language, arabicFont, translationFont, reminder) ->
+                    listOf(
+                        theme,
+                        language,
+                        arabicFont,
+                        translationFont,
+                        reminder,
+                    )
+                },
             )
                 .collect { value -> itemsFlow.value = value }
         }
     }
-
-//    fun onItemClick(type: SettingsType) {
-//        val screenKey = when (type) {
-//            SettingsType.DARK_THEME -> {
-//                val array = DarkThemeOption.values()
-//                ThemeSettingsScreenKey(
-//                    sharedPreferencesKey = Settings.darkThemeKey,
-//                    title = resources.getString(R.string.settings_type_dark_theme),
-//                    titles = array.map { value -> resources.getString(value.title) },
-//                    values = array.map { value -> value.name },
-//                    defaultValueIndex = DarkThemeOption.SYSTEM.ordinal,
-//                )
-//            }
-//
-//            SettingsType.LANGUAGE -> {
-//                val array = LanguageOption.values()
-//                ThemeSettingsScreenKey(
-//                    sharedPreferencesKey = Settings.languageKey,
-//                    title = resources.getString(R.string.settings_type_language),
-//                    titles = array.map { value -> resources.getString(value.title) },
-//                    values = array.map { value -> value.name },
-//                    defaultValueIndex = LanguageOption.getFallback().ordinal,
-//                )
-//            }
-//        }
-
-//        backstack.goTo(screenKey)
-//    }
 }
