@@ -118,7 +118,6 @@ class App : Application() {
             viewModel {
                 SettingsViewModel(
                     resources = get(),
-                    application = get(),
                     sharedPreferences = get(),
                 )
             }
