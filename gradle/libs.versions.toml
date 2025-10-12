@@ -27,6 +27,7 @@ uiToolingPreview = "1.6.7"
 serialization = "1.6.3"
 koinAndroidxCompose = '3.6.0-wasm-alpha2'
 materialNavigationCompose = "1.9.0"
+material3Android = "1.4.0"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -63,6 +64,7 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 koin-androidx-compose = { module = 'io.insert-koin:koin-androidx-compose', version.ref = 'koinAndroidxCompose' }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 
 [plugins]
 android-application = { id = 'com.android.application', version.ref = 'androidApplication' }

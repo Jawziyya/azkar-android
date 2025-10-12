@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +38,8 @@ fun AppBar(
     statusBarsPadding: Boolean = true,
     onBackClick: (() -> Unit)? = null,
     @DrawableRes backDrawableRes: Int = R.drawable.ic_arrow_back_24,
+    onLeadingIconClick: (() -> Unit)? = null,
+    @DrawableRes leadingDrawableRes: Int? = null,
 ) {
     val statusBarsPaddingModifier =
         if (statusBarsPadding) Modifier.statusBarsPadding() else Modifier
@@ -75,9 +77,21 @@ fun AppBar(
                 color = AppTheme.colors.text,
             )
 
-            Spacer(modifier = Modifier.size(56.dp))
+            if (onLeadingIconClick == null || leadingDrawableRes == null) {
+                Spacer(modifier = Modifier.size(56.dp))
+            } else {
+                Image(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .rippleClickable(onLeadingIconClick)
+                        .padding(16.dp),
+                    painter = painterResource(leadingDrawableRes),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(AppTheme.colors.icon),
+                )
+            }
         }
-        Divider(
+        HorizontalDivider(
             color = AppTheme.colors.divider,
         )
     }

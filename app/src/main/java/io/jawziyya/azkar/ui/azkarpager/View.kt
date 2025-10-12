@@ -23,11 +23,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -67,6 +67,7 @@ import io.jawziyya.azkar.ui.core.quantityStringResource
 import io.jawziyya.azkar.ui.core.rippleClickable
 import io.jawziyya.azkar.ui.core.toSp
 import io.jawziyya.azkar.ui.hadith.HadithScreen
+import io.jawziyya.azkar.ui.share.ShareScreen
 import io.jawziyya.azkar.ui.theme.AppTheme
 import io.jawziyya.azkar.ui.theme.components.AppBar
 import kotlinx.coroutines.delay
@@ -126,7 +127,10 @@ fun AzkarPagerScreenView(
         onReplayClick = viewModel::onReplayClick,
         onPlayClick = viewModel::onPlayClick,
         onAudioPlaybackSpeedChangeClick = viewModel::onAudioPlaybackSpeedChangeClick,
-        onCounterClick = viewModel::onCounterClick,
+//        onCounterClick = viewModel::onCounterClick,
+        onCounterClick = {
+            navController.navigate(ShareScreen(azkarId = it.id))
+        },
     )
 }
 
@@ -176,7 +180,8 @@ private fun View(
                     modifier = Modifier.fillMaxSize(),
                     state = pagerState,
                     beyondViewportPageCount = 1,
-                    key = { index -> azkarList[index].id }) { page ->
+                    key = { index -> azkarList[index].id },
+                ) { page ->
                     val azkar = azkarList[page]
                     val playerStateValue = if (azkar.id == playerState.azkarId) playerState
                     else AzkarPlayerState()
@@ -244,20 +249,18 @@ private fun BoxScope.Counter(
                     modifier = Modifier
                         .navigationBarsPadding()
                         .padding(16.dp),
-                    backgroundColor = AppTheme.colors.accent,
-                    onClick = remember(pagerState.currentPage) {
-                        {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            counterClicked = true
-                            onClick(azkarList[pagerState.currentPage])
-                        }
+                    containerColor = AppTheme.colors.accent,
+                    contentColor = AppTheme.colors.textOnAccent,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        counterClicked = true
+                        onClick(azkarList[pagerState.currentPage])
                     },
                 ) {
                     Text(
                         text = if (repeatsLeft > 0) repeatsLeft.toString() else "",
                         style = AppTheme.typography.digits,
                         fontSize = 20.sp,
-                        color = AppTheme.colors.textOnAccent,
                     )
                 }
             }
@@ -526,14 +529,14 @@ private fun PlayerProgress(
         if (loadingValue) {
             LinearProgressIndicator(
                 modifier = modifier.fillMaxWidth(),
-                backgroundColor = AppTheme.colors.progressBackground,
+                trackColor = AppTheme.colors.progressBackground,
                 color = AppTheme.colors.alternativeAccent,
             )
         } else {
             LinearProgressIndicator(
-                progress = value,
+                progress = { value },
                 modifier = modifier.fillMaxWidth(),
-                backgroundColor = AppTheme.colors.progressBackground,
+                trackColor = AppTheme.colors.progressBackground,
                 color = AppTheme.colors.alternativeAccent,
             )
         }

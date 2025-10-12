@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.RadioButton
-import androidx.compose.material.RadioButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +52,8 @@ fun RadioGroup(
                     colors = RadioButtonDefaults.colors(
                         selectedColor = AppTheme.colors.accent,
                         unselectedColor = AppTheme.colors.accent.copy(alpha = 0.6f),
-                        disabledColor = AppTheme.colors.accent.copy(alpha = ContentAlpha.disabled)
+                        disabledSelectedColor = AppTheme.colors.accent.copy(alpha = 0.38f),
+                        disabledUnselectedColor = AppTheme.colors.accent.copy(alpha = 0.38f)
                     ),
                 )
             }

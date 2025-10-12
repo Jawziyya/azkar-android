@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
+// TODO: Migrate to Material 3 navigation when available
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.navigation.BottomSheetNavigator
 import androidx.compose.material.navigation.ModalBottomSheetLayout
@@ -40,7 +41,10 @@ import io.jawziyya.azkar.ui.settings.SettingsScreenView
 import io.jawziyya.azkar.ui.settings.TranslationFontOption
 import io.jawziyya.azkar.ui.settings.reminder.ReminderSettingsScreen
 import io.jawziyya.azkar.ui.settings.reminder.ReminderSettingsScreenView
+import io.jawziyya.azkar.ui.share.ShareScreen
+import io.jawziyya.azkar.ui.share.ShareScreenView
 import io.jawziyya.azkar.ui.theme.AppTheme
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.koin.compose.koinInject
 
@@ -139,6 +143,13 @@ fun ComposableApp() {
 
                 composable<ReminderSettingsScreen> { navBackStackEntry ->
                     ReminderSettingsScreenView(
+                        navController = navController,
+                        navBackStackEntry = navBackStackEntry,
+                    )
+                }
+
+                composable<ShareScreen> { navBackStackEntry ->
+                    ShareScreenView(
                         navController = navController,
                         navBackStackEntry = navBackStackEntry,
                     )

@@ -22,6 +22,9 @@ import io.jawziyya.azkar.ui.main.MainViewModel
 import io.jawziyya.azkar.ui.settings.SettingsDetailViewModel
 import io.jawziyya.azkar.ui.settings.SettingsViewModel
 import io.jawziyya.azkar.ui.settings.reminder.ReminderSettingsViewModel
+import io.jawziyya.azkar.ui.share.ShareViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -38,6 +41,7 @@ class App : Application() {
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app")
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
 
@@ -46,6 +50,7 @@ class App : Application() {
         }
 
         val appModule = module {
+            single<CoroutineScope> { GlobalScope }
             single<Application> { this@App }
             single<Resources> { resources }
             single<SharedPreferences> {
@@ -65,7 +70,7 @@ class App : Application() {
             single<AzkarCounterRepository> { AzkarCounterRepository() }
             single<MoonPhaseRepository> {
                 MoonPhaseRepository(
-                    coroutineScope = GlobalScope,
+                    coroutineScope = get(),
                 )
             }
             single<ReminderDataSource> {
@@ -79,7 +84,7 @@ class App : Application() {
             ) {
                 ReminderHelper(
                     application = get(),
-                    coroutineScope = GlobalScope,
+                    coroutineScope = get(),
                     alarmManager = get(),
                     reminderDataSource = get(),
                     sharedPreferences = get(),
@@ -134,6 +139,13 @@ class App : Application() {
                 ReminderSettingsViewModel(
                     alarmManager = get(),
                     reminderDataSource = get(),
+                )
+            }
+            viewModel { params ->
+                ShareViewModel(
+                    azkarId = params.get(),
+                    application = get(),
+                    databaseHelper = get()
                 )
             }
         }

@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.CancellationSignal
+import androidx.compose.ui.util.fastFirst
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import io.jawziyya.azkar.R
@@ -96,6 +97,71 @@ class DatabaseHelper(
                 )
             },
         )
+    }
+
+    suspend fun getAzkar(
+        azkarId: Long,
+    ): Azkar? = withContext(Dispatchers.IO) {
+        val languageOption = getLanguageOption()
+        val language = languageOption.value
+
+        val columns = listOfNotNull(
+            "azkar.id",
+            "`azkar+azkar_group`.`id`as azkarCategoryId",
+            "azkar.repeats",
+            "azkar.source",
+            "azkar.text",
+            "azkar.hadith",
+            "azkar.audio_id",
+            "`azkar+azkar_group`.`order`",
+            "`azkar+azkar_group`.`group` as category",
+            "audios.link as audioName",
+            "azkar_$language.title",
+            "azkar_$language.text as translation",
+            "azkar_$language.benefits",
+            "azkar_$language.notes",
+            "azkar_$language.notes",
+            if (languageOption.main) "azkar_$language.transliteration" else null
+        )
+            .joinToString(separator = ", ")
+
+        return@withContext get(
+            query = """
+            select $columns
+            from azkar
+            inner join `azkar+azkar_group` on azkar.id=`azkar+azkar_group`.azkar_id
+            left join audios on azkar.audio_id=audios.id
+            left join azkar_$language on azkar.id=azkar_$language.id
+            where azkar.id=?
+            """.trimIndent(),
+            arguments = arrayOf(azkarId.toString()),
+            mapper = { cursor ->
+                val position = cursor.position + 1
+                val fallbackTitle = "${resources.getString(R.string.dhikr_fallback_name)}$position"
+                val categoryValue = cursor.getString(cursor.getColumnIndexOrThrow("category"))
+                val benefits = cursor.getStringOrNull(cursor.getColumnIndex("benefits"))
+                    ?.takeIf { it.isNotBlank() }
+
+                return@get Azkar(
+                    id = cursor.getLong(cursor.getColumnIndexOrThrow("id")),
+                    azkarCategoryId = cursor.getLong(cursor.getColumnIndexOrThrow("azkarCategoryId")),
+                    category = AzkarCategory.fromValue(categoryValue)!!,
+                    repeats = cursor.getInt(cursor.getColumnIndexOrThrow("repeats")),
+                    repeatsLeft = cursor.getInt(cursor.getColumnIndexOrThrow("repeats")),
+                    source = Source.fromValue(cursor.getString(cursor.getColumnIndexOrThrow("source"))),
+                    text = cursor.getString(cursor.getColumnIndexOrThrow("text")),
+                    title = cursor.getStringOrNull(cursor.getColumnIndex("title"))
+                        ?: fallbackTitle,
+                    translation = cursor.getStringOrNull(cursor.getColumnIndexOrThrow("translation")),
+                    transliteration = cursor.getStringOrNull(cursor.getColumnIndex("transliteration")),
+                    benefits = benefits,
+                    notes = cursor.getStringOrNull(cursor.getColumnIndexOrThrow("notes")),
+                    hadith = cursor.getLongOrNull(cursor.getColumnIndexOrThrow("hadith")),
+                    audioName = cursor.getStringOrNull(cursor.getColumnIndexOrThrow("audioName")),
+                    order = cursor.getInt(cursor.getColumnIndexOrThrow("order")),
+                )
+            },
+        ).firstOrNull()
     }
 
     suspend fun getAzkarList(

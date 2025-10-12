@@ -19,10 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -176,7 +176,7 @@ private fun View(
                                 modifier = Modifier.padding(bottom = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Divider(Modifier.padding(horizontal = 16.dp))
+                                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
 
                                 TimeItem(
                                     text = "Утренние",
@@ -184,7 +184,7 @@ private fun View(
                                     onTimeChange = onMorningTimeChange,
                                 )
 
-                                Divider(Modifier.padding(horizontal = 16.dp))
+                                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
 
                                 TimeItem(
                                     text = "Вечерние",
@@ -208,7 +208,7 @@ private fun View(
                                 modifier = Modifier.padding(bottom = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Divider(Modifier.padding(horizontal = 16.dp))
+                                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
 
                                 TimeItem(
                                     text = "Время",
@@ -296,10 +296,10 @@ private fun TimePicker(
 ) {
     var selectedValue by remember(value) { mutableStateOf(value) }
 
-    MaterialTheme(
-        colors = MaterialTheme.colors.copy(
-            surface = AppTheme.colors.contentBackground
-        )
+    // Material 3 doesn't support colors override in MaterialTheme
+    // Using direct background color instead
+    Box(
+        modifier = Modifier.background(AppTheme.colors.contentBackground)
     ) {
         DropdownMenu(
             expanded = visible,

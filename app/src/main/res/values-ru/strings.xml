@@ -78,4 +78,8 @@
     <string name="reminder_message_morning">Время утренних азкаров</string>
     <string name="reminder_message_evening">Время вечерних азкаров</string>
     <string name="reminder_message_djuma">Время дуа в день джума</string>
+
+    <!--  Share option  -->
+    <string name="share_option_gallery">Сохранить в галерее</string>
+    <string name="share_option_default">Поделиться</string>
 </resources>
